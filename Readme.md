@@ -41,4 +41,4 @@ npm run build
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is private and copyrighted to Tanmaya. Unauthorized use, distribution, or modification is strictly prohibited.
