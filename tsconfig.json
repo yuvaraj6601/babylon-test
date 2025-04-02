@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    // other options...
+    "baseUrl": ".", // Set the base URL for module resolution
+    "paths": {
+      "three/webgpu": ["node_modules/three/build/three.webgpu.js"],
+      "three/tsl": ["node_modules/three/build/three.tsl.js"],
+    },
+  }
+}

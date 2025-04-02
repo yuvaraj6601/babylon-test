@@ -1,0 +1,27 @@
+{
+  "name": "tanmaya",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx vite",
+    "build": "npx vite build",
+    "serve": "npx vite preview",
+    "dev": "npx vite",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts,.js,.vue",
+    "lint:fix": "eslint . --ext .ts,.js,.vue --fix",
+    "check": "tsc --noEmit",
+    "check:watch": "tsc --noEmit --watch",
+    "check:fix": "tsc --noEmit --skipLibCheck"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.175.0"
+  },
+  "devDependencies": {
+    "vite": "^6.2.4"
+  }
+}
