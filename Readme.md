@@ -1,13 +1,6 @@
-# Three.js Application
+# Tanmaya 3D visualization project
 
 This is a 3D web application built using [Three.js](https://threejs.org/) and powered by [Vite](https://vitejs.dev/) for fast development and bundling.
-
-## Features
-
-- Interactive 3D scenes
-- Customizable objects and animations
-- Responsive design
-- Optimized rendering
 
 ## Installation
 
@@ -17,7 +10,7 @@ This is a 3D web application built using [Three.js](https://threejs.org/) and po
   ```
 2. Navigate to the project directory:
   ```bash
-  cd anmaya
+  cd tanmaya
   ```
 3. Install dependencies:
   ```bash
