@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import { pathTubePoints } from '../helpers/data'; // Import points from the data file
+import { mainPath } from '../helpers/mainPathData'; // Import points from the data file
+import { plot15 } from '../helpers/plotPathData';
 
 export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
   const controls = new PointerLockControls(camera, document.body);
+  let isMainPath = true; // Flag to track the current path
 
   document.addEventListener('click', () => {
-    controls.lock();
+    // controls.lock();
   });
 
   controls.addEventListener('lock', () => {
@@ -33,6 +35,16 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       case 'KeyS':
         moveBackward = true;
         break;
+      case 'Digit1': // Switch to the first curve
+        switchPath(mainPath, true);
+        isMainPath = true; // Set the flag to indicate the main path
+        t = lastPathLocation
+        break;
+      case 'Digit2': // Switch to the second curve
+        switchPath(plot15);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
     }
   };
 
@@ -54,16 +66,37 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   const clock = new THREE.Clock();
 
-  // Extract positions from pathTubePoints and create a smoother curve
-  const points = pathTubePoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
-  const path = new THREE.CatmullRomCurve3(points, false, 'centripetal'); // Use 'centripetal' for smoother interpolation
+  // Initialize the first path
+  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
+  let path = new THREE.CatmullRomCurve3(points, false, 'centripetal'); // Use 'centripetal' for smoother interpolation
   path.closed = false;
 
   let t = 0; // Parameter to track position along the path
+  let lastPathLocation = 0; // Last location on the path
   const lerpFactor = 0.1; // Factor for smoothing camera movement
 
   const currentCameraPosition = new THREE.Vector3();
   const currentLookAtPosition = new THREE.Vector3();
+
+
+  function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false, ) {
+    // Update the path with new points
+    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
+    path = new THREE.CatmullRomCurve3(points, false, 'centripetal');
+    path.closed = true;
+
+    if(continueFromLastPosition) {
+        const lastPosition = path.getPointAt(lastPathLocation);
+        camera.position.copy(lastPosition);
+        currentCameraPosition.copy(lastPosition);
+    }else{
+      // Reset the movement parameter and camera position
+      t = 0;
+      const startPosition = path.getPointAt(0);
+      camera.position.copy(startPosition);
+      currentCameraPosition.copy(startPosition);
+    }
+  }
 
   function updateCamera() {
     const delta = clock.getDelta();
@@ -77,11 +110,17 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       t -= moveDistance / path.getLength();
     }
 
+    if (isMainPath){
+      lastPathLocation = t; // Update the last path location
+      console.log("ismainpath", t)
+    }
+
     // Clamp `t` to stay within the bounds of the path
     t = THREE.MathUtils.clamp(t, 0, 1);
 
     // Get the current position and the look-ahead position on the path
     const targetPosition = path.getPointAt(t);
+    // console.log("actual path", targetPosition)
     const targetLookAtPosition = path.getPointAt((t + 0.02) % 1); // Slightly ahead on the path
 
     // Smoothly interpolate the camera position and orientation
