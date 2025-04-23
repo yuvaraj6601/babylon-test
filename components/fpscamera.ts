@@ -24,6 +24,8 @@ export function setupFPSCamera(scene: THREE.Scene, camera: THREE.PerspectiveCame
   let moveBackward = false;
   let moveLeft = false;
   let moveRight = false;
+  let moveUp = false;
+  let moveDown = false;
 
   const onKeyDown = (event: KeyboardEvent) => {
     switch (event.code) {
@@ -42,6 +44,12 @@ export function setupFPSCamera(scene: THREE.Scene, camera: THREE.PerspectiveCame
       case 'ArrowRight':
       case 'KeyD':
         moveRight = true;
+        break;
+      case 'Space': // Move up
+        moveUp = true;
+        break;
+      case 'ShiftLeft': // Move down
+        moveDown = true;
         break;
     }
   };
@@ -64,6 +72,12 @@ export function setupFPSCamera(scene: THREE.Scene, camera: THREE.PerspectiveCame
       case 'KeyD':
         moveRight = false;
         break;
+      case 'Space': // Stop moving up
+        moveUp = false;
+        break;
+      case 'ShiftLeft': // Stop moving down
+        moveDown = false;
+        break;
     }
   };
 
@@ -76,17 +90,21 @@ export function setupFPSCamera(scene: THREE.Scene, camera: THREE.PerspectiveCame
     const delta = clock.getDelta();
 
     velocity.x -= velocity.x * 10.0 * delta;
+    velocity.y -= velocity.y * 10.0 * delta; // Add vertical damping
     velocity.z -= velocity.z * 10.0 * delta;
 
     direction.z = Number(moveForward) - Number(moveBackward);
     direction.x = Number(moveRight) - Number(moveLeft);
+    direction.y = Number(moveUp) - Number(moveDown); // Add vertical direction
     direction.normalize();
 
     if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
     if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+    if (moveUp || moveDown) velocity.y -= direction.y * 400.0 * delta; // Apply vertical velocity
 
     controls.moveRight(-velocity.x * delta);
     controls.moveForward(-velocity.z * delta);
+    camera.position.y += velocity.y * delta; // Update vertical position
 
     requestAnimationFrame(update);
   }
