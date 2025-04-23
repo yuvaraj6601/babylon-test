@@ -27,8 +27,30 @@ export function loadLandModel(
 
       parentNode.add(gltf.scene); // Add the loaded model to the empty node
 
+      // Enable shadow casting for all meshes in the model
+      gltf.scene.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true; // Enable shadow casting
+          child.receiveShadow = true; // Enable shadow receiving (optional)
+          if (child.material) {
+            const material = child.material;
+            if (material.name === 'Material.003') {
+              material.transparent = true; // Example: Make the material transparent
+              material.opacity = 1; // Example: Set opacity to 50%
+              material.color.set(0xFFD700); // Example: Change color to gold
+              material.metalness = 1.; // Example: Set metalness to 0.5
+            }
 
-      // // Call the callback function if provided
+            // if (material.name === 'Material.003') {
+            //   material.transparent = true; // Example: Make the material transparent
+            //   material.opacity = 1; // Example: Set opacity to 50%
+            //   material.color.set(0xFFD700); // Example: Change color to gold
+            // }
+          }
+        }
+      });
+
+      // Call the callback function if provided
       if (onLoadCallback) {
         onLoadCallback(gltf.scene);
       }

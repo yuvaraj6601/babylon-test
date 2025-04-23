@@ -1,11 +1,15 @@
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import * as THREE from 'three';
+import { saveDataToFile } from '../helpers/functions'; // Import the saveDataToFile function
 
 export function setupControlledCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamera, meshes: THREE.Mesh[]) {
   const controls = new PointerLockControls(camera, document.body);
 
+  // Ensure PointerLockControls is properly initialized
   document.addEventListener('click', () => {
-    controls.lock();
+    if (!controls.isLocked) {
+      controls.lock();
+    }
   });
 
   controls.addEventListener('lock', () => {
@@ -38,10 +42,10 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
       case 'KeyS':
         moveBackward = true;
         break;
-      case 'ArrowLeft':
+      case 'ArrowLeft': // Rotate camera left
         turnLeft = true;
         break;
-      case 'ArrowRight':
+      case 'ArrowRight': // Rotate camera right
         turnRight = true;
         break;
       case 'KeyR': // Record camera data
@@ -58,7 +62,7 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
       case 'KeyY': // Delete the last value in the array
         if (recordedData.length > 0) {
           const removedData = recordedData.pop(); // Remove the last entry
-          console.log('Removed Camera Data:', removedData,);
+          console.log('Removed Camera Data:', removedData);
         } else {
           console.log('No data to remove.');
         }
@@ -66,7 +70,7 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
       case 'KeyO': // Delete the last value in the array
         if (recordedData.length > 0) {
           const removedplotData = plotData.pop(); // Remove the last entry
-          console.log('Removed Camera Data:',  removedplotData);
+          console.log('Removed Camera Data:', removedplotData);
         } else {
           console.log('No data to remove.');
         }
@@ -166,7 +170,6 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
         intersect.point.y + 16, // Adjust height to stay above the surface
         intersect.point.z // Follow the path on the mesh
       );
-      // console.log(`Rotation - X: ${camera.rotation.x}, Y: ${camera.rotation.y}, Z: ${camera.rotation.z}`);
     } else {
       console.log('Out of bounds: Preventing movement');
     }
@@ -177,25 +180,4 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
   update();
 }
 
-// Function to save recorded data to a file
-function saveDataToFile(data: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }>, filename: string) {
-  const jsonData = JSON.stringify(
-    data.map((entry) => ({
-      position: { x: entry.position.x, y: entry.position.y, z: entry.position.z },
-      rotation: { x: entry.rotation.x, y: entry.rotation.y, z: entry.rotation.z },
-      scale: { x: entry.scale.x, y: entry.scale.y, z: entry.scale.z },
-    })),
-    null,
-    2
-  );
 
-  const blob = new Blob([jsonData], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-
-  URL.revokeObjectURL(url);
-}

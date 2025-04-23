@@ -1,4 +1,4 @@
-export const pathTubePoints = [
+export const mainPath = [
 
   {
     "position": {

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { EffectComposer, RenderPass, EffectPass } from 'postprocessing';
 import { GodRaysEffect } from 'postprocessing';
+import { DepthOfFieldEffect } from 'postprocessing';
 
 export function addEffects(scene: THREE.Scene, camera: THREE.PerspectiveCamera, composer:EffectComposer) {
 
@@ -9,14 +10,14 @@ export function addEffects(scene: THREE.Scene, camera: THREE.PerspectiveCamera, 
 
   // Create a light source for the god rays
   const godRayLight = new THREE.PointLight(0xffffff, 100, 100);
-  godRayLight.position.set(0, 10, 0);
+  godRayLight.position.set(0, 1000, 0);
   scene.add(godRayLight);
 
   // Add a sphere to represent the light source (optional)
   const lightSphere = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 1, 32),
+    new THREE.SphereGeometry(0, 0, 32),
     new THREE.MeshBasicMaterial({
-      color: 0xffddaa,
+      color: 0xffffff,
       depthWrite: false,
       depthTest: true
     })
@@ -35,6 +36,16 @@ export function addEffects(scene: THREE.Scene, camera: THREE.PerspectiveCamera, 
     kernelSize: 2,
     blur: true
   });
+
+  // // Enable shadow casting for the light source
+  // godRayLight.castShadow = true;
+
+  // // Configure shadow properties
+  // godRayLight.shadow.mapSize.width = 1024;
+  // godRayLight.shadow.mapSize.height = 1024;
+  // godRayLight.shadow.camera.near = 0.5;
+  // godRayLight.shadow.camera.far = 500;
+
   const effectPass = new EffectPass(camera, godRaysEffect);
   effectPass.renderToScreen = true;
   composer.addPass(effectPass);

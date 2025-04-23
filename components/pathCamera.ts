@@ -24,6 +24,8 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   const velocity = 100; // Adjust velocity as needed
   let moveForward = false;
   let moveBackward = false;
+  let turnLeft = false;
+  let turnRight = false;
 
   const onKeyDown = (event: KeyboardEvent) => {
     switch (event.code) {
@@ -34,6 +36,12 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       case 'ArrowDown':
       case 'KeyS':
         moveBackward = true;
+        break;
+      case 'ArrowLeft':
+        turnLeft = true;
+        break;
+      case 'ArrowRight':
+        turnRight = true;
         break;
       case 'Digit1': // Switch to the first curve
         switchPath(mainPath, true);
@@ -57,6 +65,12 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       case 'ArrowDown':
       case 'KeyS':
         moveBackward = false;
+        break;
+      case 'ArrowLeft':
+        turnLeft = false;
+        break;
+      case 'ArrowRight':
+        turnRight = false;
         break;
     }
   };
@@ -101,34 +115,36 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   function updateCamera() {
     const delta = clock.getDelta();
     const moveDistance = velocity * delta;
+    const turnSpeed = 1.5 * delta;
 
-    // Update the parameter `t` based on forward/backward movement
-    if (moveForward) {
-      t += moveDistance / path.getLength(); // Normalize movement along the path
-    }
-    if (moveBackward) {
-      t -= moveDistance / path.getLength();
-    }
+    // Update t along the path
+    if (moveForward) t += moveDistance / path.getLength();
+    if (moveBackward) t -= moveDistance / path.getLength();
+    t = THREE.MathUtils.clamp(t, 0, 1);
 
-    if (isMainPath){
+    if (isMainPath) {
       lastPathLocation = t; // Update the last path location
       console.log("ismainpath", t)
     }
 
-    // Clamp `t` to stay within the bounds of the path
-    t = THREE.MathUtils.clamp(t, 0, 1);
-
-    // Get the current position and the look-ahead position on the path
     const targetPosition = path.getPointAt(t);
-    // console.log("actual path", targetPosition)
-    const targetLookAtPosition = path.getPointAt((t + 0.02) % 1); // Slightly ahead on the path
+    const targetLookAtPosition = path.getPointAt((t + 0.02) % 1);
 
-    // Smoothly interpolate the camera position and orientation
-    currentCameraPosition.lerp(targetPosition, lerpFactor * delta * 60); // Scale lerpFactor by delta time
-    currentLookAtPosition.lerp(targetLookAtPosition, lerpFactor * delta * 60);
-
+    currentCameraPosition.lerp(targetPosition, lerpFactor * delta * 60);
     camera.position.copy(currentCameraPosition);
-    camera.lookAt(currentLookAtPosition);
+
+    if (moveForward || moveBackward) {
+      // Look along the path when moving
+      currentLookAtPosition.lerp(targetLookAtPosition, lerpFactor * delta * 60);
+      camera.lookAt(currentLookAtPosition);
+      // Optionally, reset manual yaw here if you want
+    } else {
+      // Allow manual yaw when not moving
+      if (turnLeft || turnRight) {
+        const targetRotationY = camera.rotation.y + (turnLeft ? turnSpeed : -turnSpeed);
+        camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, targetRotationY, 0.2 * delta * 720);
+      }
+    }
   }
 
   function animate() {

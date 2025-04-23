@@ -22,19 +22,20 @@ const renderer = new THREE.WebGLRenderer({
   depth: true
 });
 
-renderer.toneMapping = THREE.NoToneMapping;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // // add controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Enable smooth damping for better user experience
-controls.dampingFactor = 0.05; // Adjust damping factor
-controls.minDistance = 1; // Set minimum zoom distance
-controls.maxDistance = 10000; // Set maximum zoom distance
-controls.target.set(0, 0, 0); // Set the target point for the camera to look at
-controls.update(); // Update controls
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.enableDamping = true; // Enable smooth damping for better user experience
+// controls.dampingFactor = 0.05; // Adjust damping factor
+// controls.minDistance = 1; // Set minimum zoom distance
+// controls.maxDistance = 10000; // Set maximum zoom distance
+// controls.target.set(0, 0, 0); // Set the target point for the camera to look at
+// controls.update(); // Update controls
 
 // Set up EffectComposer
 const composer = new EffectComposer(renderer, {
@@ -53,8 +54,12 @@ camera.rotation.set( 0, -0.5052000000178812,  0)
 
 addEffects(scene, camera, composer); // Call the addEffects function
 addLights(scene); // Call the addLights function
+// Enable shadows in the renderer
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-const modelpath = './assets/models/KaliMark_21_4Final.glb'; // Path to the model
+// const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
+const modelpath = './assets/models/KaliMark_nameBoard&Lightsglb.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = './assets/models/Environment.glb'; // Path to the model
@@ -76,7 +81,7 @@ function addcontrolledCamera() {
     return foundMeshes;
   }
 
-  const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-6"]);
+  const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-6", "3DGeom-1"]);
   if (foundMesh) {
     console.log('Found mesh:', foundMesh);
     setPathCamera(scene, camera); // Call the controlled camera setup function
