@@ -19,7 +19,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   scene.add(controls.getObject());
 
-  const velocity = 50; // Adjust velocity as needed
+  const velocity = 100; // Adjust velocity as needed
   let moveForward = false;
   let moveBackward = false;
 
@@ -54,18 +54,16 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   const clock = new THREE.Clock();
 
-  // Extract positions from pathTubePoints and create a curve
+  // Extract positions from pathTubePoints and create a smoother curve
   const points = pathTubePoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
-  const path = new THREE.CatmullRomCurve3(points);
-  path.closed = false; // Set to true if the path should loop
-
-  // Create a tube geometry along the path
-  // const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false); // Adjust segments, radius, and radial segments as needed
-  // const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00000000, wireframe: true });
-  // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
-  // scene.add(tubeMesh);
+  const path = new THREE.CatmullRomCurve3(points, false, 'centripetal'); // Use 'centripetal' for smoother interpolation
+  path.closed = false;
 
   let t = 0; // Parameter to track position along the path
+  const lerpFactor = 0.1; // Factor for smoothing camera movement
+
+  const currentCameraPosition = new THREE.Vector3();
+  const currentLookAtPosition = new THREE.Vector3();
 
   function updateCamera() {
     const delta = clock.getDelta();
@@ -83,12 +81,15 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
     t = THREE.MathUtils.clamp(t, 0, 1);
 
     // Get the current position and the look-ahead position on the path
-    const currentPosition = path.getPointAt(t);
-    const lookAheadPosition = path.getPointAt((t + 0.01) % 1); // Slightly ahead on the path
+    const targetPosition = path.getPointAt(t);
+    const targetLookAtPosition = path.getPointAt((t + 0.02) % 1); // Slightly ahead on the path
 
-    // Update the camera position and orientation
-    camera.position.copy(currentPosition);
-    camera.lookAt(lookAheadPosition);
+    // Smoothly interpolate the camera position and orientation
+    currentCameraPosition.lerp(targetPosition, lerpFactor * delta * 60); // Scale lerpFactor by delta time
+    currentLookAtPosition.lerp(targetLookAtPosition, lerpFactor * delta * 60);
+
+    camera.position.copy(currentCameraPosition);
+    camera.lookAt(currentLookAtPosition);
   }
 
   function animate() {
@@ -117,16 +118,16 @@ export function createCurveFromMesh(mesh: THREE.Mesh): THREE.CatmullRomCurve3 {
   const points: THREE.Vector3[] = [];
 
   // Iterate through the vertices and sample points
-  for (let i = 0; i < positionAttribute.count; i += 10) { // Adjust the step size for sampling
+  for (let i = 0; i < positionAttribute.count; i += 5) { // Reduce step size for denser sampling
     const x = positionAttribute.getX(i);
     const y = positionAttribute.getY(i);
     const z = positionAttribute.getZ(i);
     points.push(new THREE.Vector3(x, y, z));
   }
 
-  // Create a CatmullRomCurve3 from the sampled points
-  const curve = new THREE.CatmullRomCurve3(points);
-  curve.closed = false; // Set to true if the tube is a closed loop
+  // Create a smoother CatmullRomCurve3 from the sampled points
+  const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal'); // Use 'centripetal' for smoother interpolation
+  curve.closed = false;
 
   return curve;
 }
