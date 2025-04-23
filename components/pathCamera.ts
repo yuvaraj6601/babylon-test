@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { mainPath } from '../helpers/mainPathData'; // Import points from the data file
-import { plot15 } from '../helpers/plotPathData';
+import { plot1, plot10, plot11, plot12, plot12a, plot14, plot15, plot16, plot16a, plot2, plot3, plot4, plot5, plot6, plot7, plot7a, plot9 } from '../helpers/plotPathData';
 
 export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
   const controls = new PointerLockControls(camera, document.body);
@@ -49,10 +49,91 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
         t = lastPathLocation
         break;
       case 'Digit2': // Switch to the second curve
-        switchPath(plot15);
+        switchPath(plot1);
         isMainPath = false; // Set the flag to indicate the plot path
         lastPathLocation = 0.013947723464939575;
         break;
+      case 'Digit3': // Switch to the second curve
+        switchPath(plot2);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit4': // Switch to the fourth curve
+        switchPath(plot3);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit5': // Switch to the fifth curve
+        switchPath(plot4);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit6': // Switch to the sixth curve
+        switchPath(plot5);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit7': // Switch to the seventh curve
+        switchPath(plot6);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit8': // Switch to the eighth curve
+        switchPath(plot7);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit9': // Switch to the ninth curve
+        switchPath(plot7a);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'Digit0': // Switch to the tenth curve
+        switchPath(plot9);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyQ': // Switch to the eleventh curve
+        switchPath(plot10);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyE': // Switch to the twelfth curve
+        switchPath(plot11);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyR': // Switch to the thirteenth curve
+        switchPath(plot12);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyT': // Switch to the fourteenth curve
+        switchPath(plot12a);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyY': // Switch to the fifteenth curve
+        switchPath(plot14);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyU': // Switch to the sixteenth curve
+        switchPath(plot15);
+        isMainPath = false; // Set the flag to iindicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyI': // Switch to the sixteenth curve
+        switchPath(plot16);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+      case 'KeyO': // Switch to the sixteenth curve
+        switchPath(plot16a);
+        isMainPath = false; // Set the flag to indicate the plot path
+        lastPathLocation = 0.013947723464939575;
+        break;
+
     }
   };
 
@@ -82,7 +163,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   // Initialize the first path
   let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
-  let path = new THREE.CatmullRomCurve3(points, false, 'centripetal'); // Use 'centripetal' for smoother interpolation
+  let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
   path.closed = false;
 
   let t = 0; // Parameter to track position along the path
@@ -96,7 +177,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false, ) {
     // Update the path with new points
     points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
-    path = new THREE.CatmullRomCurve3(points, false, 'centripetal');
+    path = new THREE.CatmullRomCurve3(points, false, 'chordal');
     path.closed = true;
 
     if(continueFromLastPosition) {

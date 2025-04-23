@@ -40,12 +40,6 @@ export function loadLandModel(
               material.color.set(0xFFD700); // Example: Change color to gold
               material.metalness = 1.; // Example: Set metalness to 0.5
             }
-
-            // if (material.name === 'Material.003') {
-            //   material.transparent = true; // Example: Make the material transparent
-            //   material.opacity = 1; // Example: Set opacity to 50%
-            //   material.color.set(0xFFD700); // Example: Change color to gold
-            // }
           }
         }
       });

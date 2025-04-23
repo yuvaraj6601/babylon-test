@@ -57,7 +57,7 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
         break;
       case 'KeyG': // Save recorded data to a file
         saveDataToFile(recordedData, 'camera_data.json');
-        saveDataToFile(plotData, 'plots.json');
+        // saveDataToFile(plotData, 'plots.json');
         break;
       case 'KeyY': // Delete the last value in the array
         if (recordedData.length > 0) {

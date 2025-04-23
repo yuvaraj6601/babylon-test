@@ -47,8 +47,9 @@ setupEnvironment(scene, renderer); // Call the environment setup function
 
 // setupFPSCamera(scene, camera); // Call the FPS camera setup function
 
-// camera.position.set(-11.083007770875376, -151.3280583711492, 615.5883824785229); // Set initial camera position
-camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
+camera.position.set(-11.083007770875376, -151.3280583711492, 615.5883824785229); // Set initial camera position
+// camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
+camera.position.set( -541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
 camera.rotation.set( 0, -0.5052000000178812,  0)
 // camera.position.set(0,0,0); // Set initial camera position
 
@@ -59,7 +60,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = './assets/models/KaliMark_nameBoard&Lightsglb.glb'; // Path to the model
+const modelpath = './assets/models/KaliMark_PlotNo.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = './assets/models/Environment.glb'; // Path to the model
