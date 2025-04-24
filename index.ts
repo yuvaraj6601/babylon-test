@@ -11,10 +11,14 @@ import { setupEnvironment } from './components/environment';
 import { setupControlledCamera } from './components/controlledCamera';
 import { envModelLoader } from './components/envModelLoader';
 import { setPathCamera } from './components/pathCamera';
+import { saveDataToFile } from './helpers/functions';
+import { cinematic } from './assets/plotData/cinematic'; // Import the cinematic data
 
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
+camera.position.set( 197.83952660059217,1695.0960537911499, 8119.448619810425); // Set initial camera position
+camera.rotation.set(-0.20581370947573013, 0.023847359859835687, 0.004978096697086665); // Set initial camera rotation
 const renderer = new THREE.WebGLRenderer({
   antialias: false, // Disable for postprocessing performance
   powerPreference: 'high-performance',
@@ -47,10 +51,9 @@ setupEnvironment(scene, renderer); // Call the environment setup function
 
 // setupFPSCamera(scene, camera); // Call the FPS camera setup function
 
-camera.position.set(-11.083007770875376, -151.3280583711492, 615.5883824785229); // Set initial camera position
+// camera.position.set(-11.083007770875376, -151.3280583711492, 615.5883824785229); // Set initial camera position
 // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
-camera.position.set( -541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
-camera.rotation.set( 0, -0.5052000000178812,  0)
+// camera.position.set( -541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
 // camera.position.set(0,0,0); // Set initial camera position
 
 addEffects(scene, camera, composer); // Call the addEffects function
@@ -85,12 +88,52 @@ function addcontrolledCamera() {
   const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-6", "3DGeom-1"]);
   if (foundMesh) {
     console.log('Found mesh:', foundMesh);
-    setPathCamera(scene, camera); // Call the controlled camera setup function
-    // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
+    startCinematic();
   } else {
     console.log('Mesh not found');
   }
 }
+
+function startCinematic(){
+    const timeline = gsap.timeline();
+
+    cinematic.forEach((point, index) => {
+      timeline.to(camera.position, {
+        x: point.position.x,
+        y: point.position.y,
+        z: point.position.z,
+        duration: point.duration, // Default duration if not specified
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          camera.lookAt(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+        },
+      });
+    });
+
+    timeline.call(() => {
+      setPathCamera(scene, camera);
+      camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+      camera.rotation.set(0, -0.5052000000178812, 0);
+    });
+    // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
+  
+}
+
+const cameraData: { position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }[] = [];
+
+// window.addEventListener('keydown', (event) => {
+//   if (event.key === 'r') {
+//     const position = camera.position.clone();
+//     const rotation = camera.rotation.clone();
+//     const scale = camera.scale.clone();
+//     cameraData.push({ position, rotation, scale });
+//     console.log('Camera data added:', { position, rotation, scale });
+//   } else if (event.key === 'g') {
+//     saveDataToFile(cameraData, 'cameraData.json');
+//     console.log('Camera data saved to file.');
+//   }
+// });
+
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;

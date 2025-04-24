@@ -96,8 +96,8 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   let lastPathLocation = 0; // Last location on the path
   const lerpFactor = 0.1; // Factor for smoothing camera movement
 
-  const currentCameraPosition = new THREE.Vector3();
-  const currentLookAtPosition = new THREE.Vector3();
+  const currentCameraPosition = new THREE.Vector3(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+  const currentLookAtPosition = new THREE.Vector3(-541.4250755705959, -34.24183544050365, 35.98386625888884);
 
 
   function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false, ) {
@@ -176,8 +176,6 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
     spheres.push(sphere);
     scene.add(sphere);
   });
-
-
 
   const buttons: THREE.Mesh[] = [];
 
