@@ -13,7 +13,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   const cameraLog: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3; t: number }> = [];
 
   document.addEventListener('click', () => {
-    // controls.lock();
+    controls.lock();
   });
 
   controls.addEventListener('lock', () => {
@@ -26,7 +26,17 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   scene.add(controls.getObject());
 
-  const velocity = 100; // Adjust velocity as needed
+  let velocity = 50; // Initial velocity
+
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Equal') { // '+' key
+      velocity += 10;
+      console.log(`Velocity increased to: ${velocity}`);
+    } else if (event.code === 'Minus') { // '-' key
+      velocity = Math.max(10, velocity - 10); // Ensure velocity doesn't go below 10
+      console.log(`Velocity decreased to: ${velocity}`);
+    }
+  });
   let moveForward = false;
   let moveBackward = false;
   let turnLeft = false;
@@ -169,7 +179,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   // Create spheres at the logged positions
   camera_log.forEach((logEntry) => {
-    const sphereGeometry = new THREE.SphereGeometry(30, 60, 60); // Adjust size as needed
+    const sphereGeometry = new THREE.SphereGeometry(10, 60, 60); // Adjust size as needed
     const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
     const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphere.position.set(logEntry.position.x, logEntry.position.y, logEntry.position.z);
@@ -181,8 +191,8 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   // Create buttons near the spheres
   camera_log.forEach((logEntry, index) => {
-    const plots = [plot15, plot16, plot16a, plot14, plot12a, plot12, plot11, plot10, plot7, plot7a, plot9, plot4, plot5, plot6, plot3, plot2, plot1];
-    const plotNames = ['Plot15', 'Plot16', 'Plot16A', 'Plot14', 'Plot12A', 'Plot12', 'Plot11', 'Plot10', 'Plot07', 'Plot07A', 'Plot09', 'Plot04', 'Plot05', 'Plot06', 'Plot03', 'Plot02', 'Plot01'];
+    const plots = [plot15, plot16, plot16a, plot14, plot12a, plot12, plot11, plot10, plot7, plot7a, plot9, plot4, plot5, plot6, plot1, plot2, plot3];
+    const plotNames = ['Plot15', 'Plot16', 'Plot16A', 'Plot14', 'Plot12A', 'Plot12', 'Plot11', 'Plot10', 'Plot07', 'Plot07A', 'Plot09', 'Plot04', 'Plot05', 'Plot06', 'Plot01', 'Plot02', 'Plot03'];
 
     const plotName = plotNames[index];
     const plotMesh = scene.getObjectByName(plotName); // Find the mesh by name in the scene
@@ -248,7 +258,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
     // Add collision detection logic
     function checkSphereCollision() {
       const distance = camera.position.distanceTo(spheres[index].position);
-      if (distance < 20) { // Adjust collision threshold as needed
+      if (distance < 30) { // Adjust collision threshold as needed
         handleCollisionEnter();
       } else {
         handleCollisionExit();
@@ -275,9 +285,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   });
 
   function checkEndOfPath() {
-    console.log("endo of path",t)
     if (!isMainPath && t >= 1) {
-      console.log("endo of path")
       switchPath(mainPath, true); // Switch back to the main path
       isMainPath = true; // Set the flag to indicate the main path
       t = lastPathLocation; // Restore the last location on the main path

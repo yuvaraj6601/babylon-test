@@ -20,11 +20,12 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 camera.position.set( 197.83952660059217,1695.0960537911499, 8119.448619810425); // Set initial camera position
 camera.rotation.set(-0.20581370947573013, 0.023847359859835687, 0.004978096697086665); // Set initial camera rotation
 const renderer = new THREE.WebGLRenderer({
-  antialias: false, // Disable for postprocessing performance
+  antialias: true, // Disable for postprocessing performance
   powerPreference: 'high-performance',
   stencil: false, // Often not needed for postprocessing
   depth: true
 });
+renderer.setPixelRatio(window.devicePixelRatio)
 
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
@@ -32,14 +33,15 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+
 // // add controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Enable smooth damping for better user experience
-controls.dampingFactor = 0.05; // Adjust damping factor
-controls.minDistance = 1; // Set minimum zoom distance
-controls.maxDistance = 10000; // Set maximum zoom distance
-controls.target.set(0, 0, 0); // Set the target point for the camera to look at
-controls.update(); // Update controls
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.enableDamping = true; // Enable smooth damping for better user experience
+// controls.dampingFactor = 0.05; // Adjust damping factor
+// controls.minDistance = 1; // Set minimum zoom distance
+// controls.maxDistance = 10000; // Set maximum zoom distance
+// controls.target.set(0, 0, 0); // Set the target point for the camera to look at
+// controls.update(); // Update controls
 
 // Set up EffectComposer
 const composer = new EffectComposer(renderer, {
@@ -105,9 +107,9 @@ function startCinematic(){
         y: point.position.y,
         z: point.position.z,
         duration: point.duration, // Default duration if not specified
-        ease: 'power2.inOut',
+        ease: 'expo.inOut',
         onUpdate: () => {
-          camera.lookAt(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+          camera.lookAt( -536.7885235499837, -31.3894295837718, 27.600621935653407);
         },
       });
     });
@@ -115,7 +117,8 @@ function startCinematic(){
     timeline.call(() => {
       setPathCamera(scene, camera);
       camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
-      camera.rotation.set(0, -0.5052000000178812, 0);
+      // camera.rotation.set(0, -0.5052000000178812, 0);
+      camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
     });
     // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
   
@@ -123,18 +126,18 @@ function startCinematic(){
 
 const cameraData: { position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }[] = [];
 
-// window.addEventListener('keydown', (event) => {
-//   if (event.key === 'r') {
-//     const position = camera.position.clone();
-//     const rotation = camera.rotation.clone();
-//     const scale = camera.scale.clone();
-//     cameraData.push({ position, rotation, scale });
-//     console.log('Camera data added:', { position, rotation, scale });
-//   } else if (event.key === 'g') {
-//     saveDataToFile(cameraData, 'cameraData.json');
-//     console.log('Camera data saved to file.');
-//   }
-// });
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'r') {
+    const position = camera.position.clone();
+    const rotation = camera.rotation.clone();
+    const scale = camera.scale.clone();
+    cameraData.push({ position, rotation, scale });
+    console.log('Camera data added:', { position, rotation, scale });
+  } else if (event.key === 'g') {
+    saveDataToFile(cameraData, 'cameraData.json');
+    console.log('Camera data saved to file.');
+  }
+});
 
 
 window.addEventListener('resize', () => {

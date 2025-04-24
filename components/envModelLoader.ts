@@ -25,7 +25,23 @@ export function envModelLoader(
       gltf.scene.scale.set(10, 10, 10); // Adjust scale as needed
       gltf.scene.position.set(-280, -240, 400); // Adjust position as needed
       gltf.scene.rotation.set(THREE.MathUtils.degToRad(0), THREE.MathUtils.degToRad(180), THREE.MathUtils.degToRad(0)); // Adjust rotation as needed
+      //Traverse the loaded scene to adjust material properties
+      gltf.scene.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          const material = child.material as THREE.MeshStandardMaterial;
 
+          if (material) {
+        // Adjust normal map strength if a normal map exists
+        // if (material.normalMap) {
+        //     material.normalScale.set(0, 0); // Adjust normal map strength for uniform bump effect
+        // }
+
+        // Set metalness and roughness
+        material.metalness = 0.0; // Adjust metalness as needed
+        material.roughness = 1.0; // Adjust roughness as needed
+          }
+        }
+      });
       parentNode.add(gltf.scene); // Add the loaded model to the empty node
 
 
