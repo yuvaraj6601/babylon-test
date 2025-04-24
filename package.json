@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tweenjs/tween.js": "^25.0.0",
     "dat.gui": "^0.7.9",
     "gsap": "^3.12.7",
     "postprocessing": "^6.37.2",

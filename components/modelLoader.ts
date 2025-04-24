@@ -44,6 +44,41 @@ export function loadLandModel(
         }
       });
 
+      // Find meshes with specific names and set their opacity to 0
+      const targetMeshNames = [
+        "Plot03",
+        "Plot04",
+        "Plot02",
+        "Plot01",
+        "Plot05",
+        "Plot06",
+        "Plot07",
+        "Plot07A",
+        "Plot09",
+        "Plot10",
+        "Plot11",
+        "Plot12",
+        "Plot12A",
+        "Plot14",
+        "Plot15",
+        "Plot16",
+        "Plot16A"
+      ]; // Replace with actual mesh names
+      const targetMeshes: THREE.Mesh[] = [];
+
+      gltf.scene.traverse((child) => {
+        console.log(child.name)
+        if (child instanceof THREE.Mesh && targetMeshNames.includes(child.name)) {
+          targetMeshes.push(child);
+          if (child.material) {
+        child.material.transparent = true;
+        child.material.opacity = 0; // Set opacity to 0
+          }
+        }
+      });
+
+      console.log('Target meshes:', targetMeshes);
+
       // Call the callback function if provided
       if (onLoadCallback) {
         onLoadCallback(gltf.scene);

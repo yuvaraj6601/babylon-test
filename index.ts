@@ -29,13 +29,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // // add controls
-// const controls = new OrbitControls(camera, renderer.domElement);
-// controls.enableDamping = true; // Enable smooth damping for better user experience
-// controls.dampingFactor = 0.05; // Adjust damping factor
-// controls.minDistance = 1; // Set minimum zoom distance
-// controls.maxDistance = 10000; // Set maximum zoom distance
-// controls.target.set(0, 0, 0); // Set the target point for the camera to look at
-// controls.update(); // Update controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; // Enable smooth damping for better user experience
+controls.dampingFactor = 0.05; // Adjust damping factor
+controls.minDistance = 1; // Set minimum zoom distance
+controls.maxDistance = 10000; // Set maximum zoom distance
+controls.target.set(0, 0, 0); // Set the target point for the camera to look at
+controls.update(); // Update controls
 
 // Set up EffectComposer
 const composer = new EffectComposer(renderer, {
@@ -60,10 +60,10 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = './assets/models/KaliMark_PlotNo.glb'; // Path to the model
+const modelpath = './assets/models/KaliMark_EnterPlot&Names.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
-const envModelpath = './assets/models/Environment.glb'; // Path to the model
+const envModelpath = './assets/models/Environment2.glb'; // Path to the model
 envModelLoader(scene, envModelpath, () => {}); // Load the land model
 
 function addcontrolledCamera() {
