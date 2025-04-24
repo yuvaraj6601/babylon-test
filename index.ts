@@ -12,7 +12,7 @@ import { setupControlledCamera } from './components/controlledCamera';
 import { envModelLoader } from './components/envModelLoader';
 import { setPathCamera } from './components/pathCamera';
 import { saveDataToFile } from './helpers/functions';
-import { cinematic } from './assets/plotData/cinematic'; // Import the cinematic data
+import { cinematic } from './public/assets/plotData/cinematic'; // Import the cinematic data
 
 
 const scene = new THREE.Scene();
@@ -63,11 +63,13 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = './assets/models/KaliMark_EnterPlot&Names.glb'; // Path to the model
+const modelpath = 'assets/models/KaliMark_EnterPlot&Names.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
-const envModelpath = './assets/models/Environment2.glb'; // Path to the model
+const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
 envModelLoader(scene, envModelpath, () => {}); // Load the land model
+
+console.log(modelpath)
 
 function addcontrolledCamera() {
   function findMeshesByNames(scene: THREE.Scene, names: string[]): THREE.Mesh[] {

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { mainPath } from '../helpers/mainPathData'; // Import points from the data file
 import { plot1, plot10, plot11, plot12, plot12a, plot14, plot15, plot16, plot16a, plot2, plot3, plot4, plot5, plot6, plot7, plot7a, plot9 } from '../helpers/plotPathData';
-import { camera_log } from "../assets/plotData/camera_log"; // Import the camera log data
+import { camera_log } from "../public/assets/plotData/camera_log"; // Import the camera log data
 import { saveDataToFile, saveTDataToFile } from '../helpers/functions';
 import * as TWEEN from '@tweenjs/tween.js';
 
