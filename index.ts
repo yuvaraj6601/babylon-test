@@ -62,7 +62,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = '/public/assets/models/KaliMark_GrassNormal.glb'; // Path to the model
+const modelpath = '/public/assets/models/KaliMark_lamp_post.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
@@ -86,10 +86,10 @@ function addcontrolledCamera() {
     return foundMeshes;
   }
 
-  const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-6", "3DGeom-1"]);
+  const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-113", "3DGeom-3"]);
   if (foundMesh) {
     console.log('Found mesh:', foundMesh);
-    // startCinematic(foundMesh);
+    startCinematic();
     // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
     // setPathCamera(scene, camera);
     // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
@@ -145,9 +145,9 @@ window.addEventListener('resize', () => {
   composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-document.getElementById('enter-btn').addEventListener('click', () => {
-    startCinematic();
-});
+// document.getElementById('enter-btn').addEventListener('click', () => {
+//     startCinematic();
+// });
 
 // Animation loop
 function animate() {
