@@ -4,16 +4,95 @@
 <head>
   <meta charset="utf-8">
   <title>Crown Boulevard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+  rel="stylesheet">
   <style>
     body {
       margin: 0;
-      background-color: white;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      position: relative;
+    }
+    .app{
+      display: flex;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: #00000099;
+      flex-direction: column;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    .title {
+      font-size: 30px;
+      color: #96702A;
+      text-align: center;
+      font-family: 'Playfair Display', 'Arial', serif;
+      margin-bottom: 40px;
+    }
+    .description {
+      font-size: 20px;
+      color: #96702A;
+      text-align: center;
+      font-family: 'Playfair Display', 'Arial', serif;
+    }
+    .crown_logo {
+      margin-bottom: 20px;
+    }
+    .kali_logo {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+    }
+    .button {
+      background-color: #96702A;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 20px;
+      font-family: 'Playfair Display', 'Arial', serif;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 140px;
     }
   </style>
 </head>
 
 <body>
+  <div class="app" >
+    <div class="kali_logo">
+      <img src="./public/assets/icons/KALI-GROUP-LOGO.svg" alt="Crown Boulevard Logo" width="120" height="120">
+    </div>
+    <div class="container">
+ 
+      <div class="crown_logo">
+        <img src="./public/assets/icons/Crown-Boulevard-Logo.svg" alt="Crown Boulevard Logo" width="400" height="400">
+      </div>
+      <div class="title">Enter the Virtual World of Crown Boulevard</div>
+      <div class="button" id="enter-btn">Enter</div>
+      <script>
+        const btn = document.getElementById('enter-btn');
+        btn.addEventListener('click', () => {
+          const app = document.querySelector('.app');
+          app.style.transition = 'opacity 2.0s';
+          app.style.opacity = '0';
+          app.addEventListener('transitionend', function handler() {
+        app.style.display = 'none';
+        app.removeEventListener('transitionend', handler);
+          });
+        });
+      </script>
+      
+    </div>
+  </body>
   <script type="module" src="/index.ts"></script>
-</body>
-
 </html>

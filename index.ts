@@ -19,7 +19,7 @@ import { createGrass } from './components/grass';
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
 camera.position.set( 197.83952660059217,1695.0960537911499, 8119.448619810425); // Set initial camera position
-camera.rotation.set(-0.20581370947573013, 0.023847359859835687, 0.004978096697086665); // Set initial camera rotation
+camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
 const renderer = new THREE.WebGLRenderer({
   antialias: true, // Disable for postprocessing performance
   powerPreference: 'high-performance',
@@ -89,9 +89,8 @@ function addcontrolledCamera() {
   const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-6", "3DGeom-1"]);
   if (foundMesh) {
     console.log('Found mesh:', foundMesh);
-    startCinematic(foundMesh);
+    // startCinematic(foundMesh);
     // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
-
     // setPathCamera(scene, camera);
     // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
     // camera.rotation.set(0, -0.5052000000178812, 0);
@@ -101,7 +100,7 @@ function addcontrolledCamera() {
   }
 }
 
-function startCinematic(foundMesh: THREE.Mesh) {
+function startCinematic() {
     const timeline = gsap.timeline();
 
     cinematic.forEach((point, index) => {
@@ -120,9 +119,7 @@ function startCinematic(foundMesh: THREE.Mesh) {
     timeline.call(() => {
       setPathCamera(scene, camera);
       camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
-
       camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
-
     });
 }
 
@@ -141,9 +138,6 @@ window.addEventListener('keydown', (event) => {
   // }
 });
 
-
-
-
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -151,10 +145,15 @@ window.addEventListener('resize', () => {
   composer.setSize(window.innerWidth, window.innerHeight);
 });
 
+document.getElementById('enter-btn').addEventListener('click', () => {
+    startCinematic();
+});
+
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
   composer.render();
 }
+
 
 animate();
