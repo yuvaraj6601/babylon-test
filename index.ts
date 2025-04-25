@@ -62,7 +62,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = '/public/assets/models/KaliMark_plotNoNewUi.glb'; // Path to the model
+const modelpath = '/public/assets/models/KaliMark_funnelOpenGate.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
@@ -93,8 +93,8 @@ function addcontrolledCamera() {
     // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
 
     // setPathCamera(scene, camera);
-    camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
-    camera.rotation.set(0, -0.5052000000178812, 0);
+    // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+    // camera.rotation.set(0, -0.5052000000178812, 0);
     // camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
   } else {
     console.log('Mesh not found');
