@@ -97,7 +97,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   const mainPath = await readDataFromFile(`/assets/plotData/mainPath.json`)
   // Create a tube geometry based on the mainPath
 
-  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y+16, point.position.z));
+  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y+8, point.position.z));
   let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
   path.closed = false;
 
@@ -116,7 +116,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
   function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false) {
     // Update the path with new points
-    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
+    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y+8, point.position.z));
     path = new THREE.CatmullRomCurve3(points, false, 'chordal');
     path.closed = false;
 
@@ -124,14 +124,20 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     // const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide, wireframe: false });
     // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
     // scene.add(tubeMesh);
-
+    console.log("continueFromLastPosition",continueFromLastPosition)
     // Smoothly transition the camera to the new path
     const targetPosition = continueFromLastPosition
       ? path.getPointAt(lastPathLocation)
       : path.getPointAt(0);
 
+    if(isMainPath){
+      t = 0;
+    }
+    
     const transitionDuration = 2000; // Duration of the transition in milliseconds
     const startPosition = camera.position.clone();
+
+    console.log("T",t)
 
     new TWEEN.Tween(startPosition)
       .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, transitionDuration)
