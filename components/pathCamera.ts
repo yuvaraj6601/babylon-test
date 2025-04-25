@@ -97,7 +97,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   const mainPath = await readDataFromFile(`/assets/plotData/mainPath.json`)
   // Create a tube geometry based on the mainPath
 
-  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
+  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y+16, point.position.z));
   let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
   path.closed = false;
 
@@ -179,13 +179,13 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     const targetPosition = path.getPointAt(t);
     const targetLookAtPosition = path.getPointAt((t + 0.02) % 1);
 
-    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y+16, targetPosition.z), lerpFactor * delta * 60);
+    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y+8, targetPosition.z), lerpFactor * delta * 60);
     camera.position.copy(currentCameraPosition);
 
     if (moveForward || moveBackward) {
       // Look along the path when moving
       const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(
-        new THREE.Matrix4().lookAt(camera.position, targetLookAtPosition, new THREE.Vector3(0, 1, 0))
+        new THREE.Matrix4().lookAt(camera.position, targetLookAtPosition.clone().add(new THREE.Vector3(0, 8, 0)), new THREE.Vector3(0, 1, 0))
       );
       camera.quaternion.slerp(targetQuaternion, lerpFactor * delta * 60);
       // Optionally, reset manual yaw here if you want
