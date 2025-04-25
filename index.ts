@@ -62,7 +62,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = '/public/assets/models/KaliMark_funnelOpenGate.glb'; // Path to the model
+const modelpath = '/public/assets/models/KaliMark_GrassNormal.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
@@ -140,6 +140,8 @@ window.addEventListener('keydown', (event) => {
   //   console.log('Camera data saved to file.');
   // }
 });
+
+
 
 
 window.addEventListener('resize', () => {
