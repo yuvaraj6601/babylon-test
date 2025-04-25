@@ -3,7 +3,7 @@ import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 
 export function setupEnvironment(scene: THREE.Scene, renderer: THREE.WebGLRenderer): void {
   // Add dense fog to the scene
-  const fogColor = 0xaaaaaa; // Softer gray fog color to reduce brightness
+  const fogColor = 0x000; // Softer gray fog color to reduce brightness
   const fogDensity = 0.0002; // Lower density for a more subtle effect
   scene.fog = new THREE.FogExp2(fogColor, fogDensity);
 

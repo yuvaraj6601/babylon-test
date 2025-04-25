@@ -13,6 +13,7 @@ import { envModelLoader } from './components/envModelLoader';
 import { setPathCamera } from './components/pathCamera';
 import { saveDataToFile } from './helpers/functions';
 import { cinematic } from './public/assets/plotData/cinematic'; // Import the cinematic data
+import { createGrass } from './components/grass';
 
 
 const scene = new THREE.Scene();
@@ -22,7 +23,7 @@ camera.rotation.set(-0.20581370947573013, 0.023847359859835687, 0.00497809669708
 const renderer = new THREE.WebGLRenderer({
   antialias: true, // Disable for postprocessing performance
   powerPreference: 'high-performance',
-  stencil: false, // Often not needed for postprocessing
+  // stencil: false, // Often not needed for postprocessing
   depth: true
 });
 renderer.setPixelRatio(window.devicePixelRatio)
@@ -35,13 +36,13 @@ document.body.appendChild(renderer.domElement);
 
 
 // // add controls
-// const controls = new OrbitControls(camera, renderer.domElement);
-// controls.enableDamping = true; // Enable smooth damping for better user experience
-// controls.dampingFactor = 0.05; // Adjust damping factor
-// controls.minDistance = 1; // Set minimum zoom distance
-// controls.maxDistance = 10000; // Set maximum zoom distance
-// controls.target.set(0, 0, 0); // Set the target point for the camera to look at
-// controls.update(); // Update controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; // Enable smooth damping for better user experience
+controls.dampingFactor = 0.05; // Adjust damping factor
+controls.minDistance = 1; // Set minimum zoom distance
+controls.maxDistance = 10000; // Set maximum zoom distance
+controls.target.set(0, 0, 0); // Set the target point for the camera to look at
+controls.update(); // Update controls
 
 // Set up EffectComposer
 const composer = new EffectComposer(renderer, {
@@ -53,11 +54,7 @@ setupEnvironment(scene, renderer); // Call the environment setup function
 
 // setupFPSCamera(scene, camera); // Call the FPS camera setup function
 
-// camera.position.set(-11.083007770875376, -151.3280583711492, 615.5883824785229); // Set initial camera position
-// camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
-// camera.position.set( -541.4250755705959, -34.24183544050365, 35.98386625888884); // Set initial camera position
-// camera.position.set(0,0,0); // Set initial camera position
-
+// createGrass(scene);
 addEffects(scene, camera, composer); // Call the addEffects function
 addLights(scene); // Call the addLights function
 // Enable shadows in the renderer
@@ -65,7 +62,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = 'assets/models/KaliMark_EnterPlot&Names.glb'; // Path to the model
+const modelpath = '/public/assets/models/KaliMark_plotNoNewUi.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
@@ -92,13 +89,18 @@ function addcontrolledCamera() {
   const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-6", "3DGeom-1"]);
   if (foundMesh) {
     console.log('Found mesh:', foundMesh);
-    startCinematic();
+    startCinematic(foundMesh);
+    // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
+
+    // setPathCamera(scene, camera);
+    // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+    // camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
   } else {
     console.log('Mesh not found');
   }
 }
 
-function startCinematic(){
+function startCinematic(foundMesh: THREE.Mesh) {
     const timeline = gsap.timeline();
 
     cinematic.forEach((point, index) => {
@@ -117,26 +119,23 @@ function startCinematic(){
     timeline.call(() => {
       setPathCamera(scene, camera);
       camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
-      // camera.rotation.set(0, -0.5052000000178812, 0);
       camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
     });
-    // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
-  
 }
 
 const cameraData: { position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }[] = [];
 
 window.addEventListener('keydown', (event) => {
-  if (event.key === 'r') {
-    const position = camera.position.clone();
-    const rotation = camera.rotation.clone();
-    const scale = camera.scale.clone();
-    cameraData.push({ position, rotation, scale });
-    console.log('Camera data added:', { position, rotation, scale });
-  } else if (event.key === 'g') {
-    saveDataToFile(cameraData, 'cameraData.json');
-    console.log('Camera data saved to file.');
-  }
+  // if (event.key === 'r') {
+  //   const position = camera.position.clone();
+  //   const rotation = camera.rotation.clone();
+  //   const scale = camera.scale.clone();
+  //   cameraData.push({ position, rotation, scale });
+  //   console.log('Camera data added:', { position, rotation, scale });
+  // } else if (event.key === 'g') {
+  //   saveDataToFile(cameraData, 'cameraData.json');
+  //   console.log('Camera data saved to file.');
+  // }
 });
 
 

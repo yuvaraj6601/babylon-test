@@ -17,7 +17,7 @@ export const saveTDataToFile = (data: Array<{ position: THREE.Vector3; rotation:
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename.endsWith('.ts') ? filename : `${filename.replace(/\.json$/, '')}.ts`;
+  a.download = filename;
   a.click();
 
   URL.revokeObjectURL(url);
@@ -39,8 +39,24 @@ export const saveDataToFile = (data: Array<{ position: THREE.Vector3; rotation: 
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename.endsWith('.ts') ? filename : `${filename.replace(/\.json$/, '')}.ts`;
+  a.download = filename;
   a.click();
 
   URL.revokeObjectURL(url);
 }
+
+
+export const readDataFromFile = (path: string): Promise<any> => {
+  console.log(path)
+  return fetch(path)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file at ${path}: ${response.statusText}`);
+      }
+      // console.log("second",response)
+      return response.json();
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+};

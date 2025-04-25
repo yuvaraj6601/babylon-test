@@ -1,6 +1,6 @@
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import * as THREE from 'three';
-import { saveDataToFile } from '../helpers/functions'; // Import the saveDataToFile function
+import { readDataFromFile, saveDataToFile } from '../helpers/functions'; // Import the saveDataToFile function
 
 export function setupControlledCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamera, meshes: THREE.Mesh[]) {
   const controls = new PointerLockControls(camera, document.body);
@@ -56,7 +56,7 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
         console.log('Recorded Camera Data:', { position, rotation, scale });
         break;
       case 'KeyG': // Save recorded data to a file
-        saveDataToFile(recordedData, 'camera_data.json');
+        saveDataToFile(recordedData, 'plot.json');
         // saveDataToFile(plotData, 'plots.json');
         break;
       case 'KeyY': // Delete the last value in the array
@@ -75,13 +75,13 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
           console.log('No data to remove.');
         }
         break;
-      case 'KeyP': // Add camera data to plotData and save to a separate file
-        const plotPosition = camera.position.clone();
-        const plotRotation = camera.rotation.clone();
-        const plotScale = camera.scale.clone();
-        plotData.push({ position: plotPosition, rotation: plotRotation, scale: plotScale });
-        console.log('Added to Plot Data:', { position: plotPosition, rotation: plotRotation, scale: plotScale });
-        break;
+      // case 'KeyP': // Add camera data to plotData and save to a separate file
+      //   const plotPosition = camera.position.clone();
+      //   const plotRotation = camera.rotation.clone();
+      //   const plotScale = camera.scale.clone();
+      //   plotData.push({ position: plotPosition, rotation: plotRotation, scale: plotScale });
+      //   console.log('Added to Plot Data:', { position: plotPosition, rotation: plotRotation, scale: plotScale });
+      //   break;
     }
   };
 
@@ -106,6 +106,25 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
 
   document.addEventListener('keydown', onKeyDown);
   document.addEventListener('keyup', onKeyUp);
+
+
+  
+//   readDataFromFile('/public/assets/plotData/mainPath.json')
+//     .then((curveData: Array<{ x: number; y: number; z: number }>) => {
+//       const points = curveData.map((point: any) => new THREE.Vector3(point.position.x, point.position.y - 16, point.position.z));
+//       const curve = new THREE.CatmullRomCurve3(points);
+
+//       const tubeGeometry = new THREE.TubeGeometry(curve, 100, 2, 8, false);
+//       const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false });
+//       const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+
+//       scene.add(tubeMesh);
+//       console.log('Tube drawn from curve data');
+//     })
+//     .catch((error) => {
+//       console.error('Error loading curve data:', error);
+// });
+  
 
   const clock = new THREE.Clock();
   const raycaster = new THREE.Raycaster();

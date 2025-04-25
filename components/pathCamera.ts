@@ -1,16 +1,14 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-import { mainPath } from '../helpers/mainPathData'; // Import points from the data file
-import { plot1, plot10, plot11, plot12, plot12a, plot14, plot15, plot16, plot16a, plot2, plot3, plot4, plot5, plot6, plot7, plot7a, plot9 } from '../helpers/plotPathData';
-import { camera_log } from "../public/assets/plotData/camera_log"; // Import the camera log data
-import { saveDataToFile, saveTDataToFile } from '../helpers/functions';
+// import { mainPath } from '../helpers/mainPathData'; // Import points from the data file
+import { readDataFromFile, saveDataToFile, saveTDataToFile } from '../helpers/functions';
 import * as TWEEN from '@tweenjs/tween.js';
 
-export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
+export async function setPathCamera (scene: THREE.Scene, camera: THREE.PerspectiveCamera){
   const controls = new PointerLockControls(camera, document.body);
   let isMainPath = true; // Flag to track the current path
 
-  const cameraLog: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3; t: number }> = [];
+  const triggers: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3; t: number }> = [];
 
   document.addEventListener('click', () => {
     controls.lock();
@@ -58,18 +56,16 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       case 'ArrowRight':
         turnRight = true;
         break;
-      // case 'KeyG': {
-      //   // Record camera state and t
-      //   recordCameraPoints();
-      //   console.log('Camera state logged:', cameraLog[cameraLog.length - 1]);
-      //   break;
-      // }
-      // case 'KeyJ': {
-      //   // Save camera log to a file
-      //   saveTDataToFile(cameraLog, 'camera_log.json');
-      //   console.log("cameraLog", cameraLog)
-      //   break;
-      // }
+      case 'KeyR': {
+        // Record camera state and t
+        recordCameraPoints();
+        break;
+      }
+      case 'KeyJ': {
+        // Save camera log to a file
+        saveTDataToFile(triggers, 'triggers.json');
+        break;
+      }
     }
   };
 
@@ -98,9 +94,17 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
   const clock = new THREE.Clock();
 
   // Initialize the first path
-  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
+  const mainPath = await readDataFromFile(`/assets/plotData/mainPath.json`)
+  // Create a tube geometry based on the mainPath
+
+  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y-16, point.position.z));
   let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
-  path.closed = false;
+  path.closed = true;
+
+  const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+  const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
+  const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+  scene.add(tubeMesh);
 
   let t = 0; // Parameter to track position along the path
   let lastPathLocation = 0; // Last location on the path
@@ -112,9 +116,14 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
   function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false, ) {
     // Update the path with new points
-    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
+    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y-16, point.position.z));
     path = new THREE.CatmullRomCurve3(points, false, 'chordal');
     path.closed = true;
+
+    const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+    const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide, wireframe: false });
+    const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+    scene.add(tubeMesh);
 
     if(continueFromLastPosition) {
         const lastPosition = path.getPointAt(lastPathLocation);
@@ -146,7 +155,7 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
     const targetPosition = path.getPointAt(t);
     const targetLookAtPosition = path.getPointAt((t + 0.02) % 1);
 
-    currentCameraPosition.lerp(targetPosition, lerpFactor * delta * 60);
+    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y + 16, targetPosition.z), lerpFactor * delta * 60);
     camera.position.copy(currentCameraPosition);
 
     if (moveForward || moveBackward) {
@@ -165,38 +174,44 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
 
   function recordCameraPoints() {
-    cameraLog.push({
+    triggers.push({
       position: camera.position.clone(),
       rotation: camera.rotation.clone(),
       scale: camera.scale.clone(),
       t:t,
     });
-    console.log(cameraLog)
+    console.log(triggers)
   }
 
   // Add collision detection logic directly within the existing functions
   const spheres: THREE.Mesh[] = [];
 
-  // Create spheres at the logged positions
-  camera_log.forEach((logEntry) => {
-    const sphereGeometry = new THREE.SphereGeometry(10, 60, 60); // Adjust size as needed
-    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.set(logEntry.position.x, logEntry.position.y, logEntry.position.z);
-    spheres.push(sphere);
-    scene.add(sphere);
-  });
+
 
   const buttons: THREE.Mesh[] = [];
 
-  // Create buttons near the spheres
-  camera_log.forEach((logEntry, index) => {
-    const plots = [plot15, plot16, plot16a, plot14, plot12a, plot12, plot11, plot10, plot7, plot7a, plot9, plot4, plot5, plot6, plot1, plot2, plot3];
+  readDataFromFile(`/assets/plotData/triggers.json`)
+    .then((triggers) => {
+      
+    // Create spheres at the logged positions
+      triggers.forEach((logEntry) => {
+      const sphereGeometry = new THREE.SphereGeometry(10, 60, 60); // Adjust size as needed
+      const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.position.set(logEntry.position.x, logEntry.position.y, logEntry.position.z);
+      spheres.push(sphere);
+      scene.add(sphere);
+    });
+
+
+    triggers.forEach((logEntry, index) => {
+    const plots = ['plot15', 'plot16', 'plot16a', 'plot14', 'plot12a', 'plot12', 'plot11', 'plot10', 'plot7', 'plot7a', 'plot9', 'plot4', 'plot5', 'plot6', 'plot1', 'plot2', 'plot3'];
     const plotNames = ['Plot15', 'Plot16', 'Plot16A', 'Plot14', 'Plot12A', 'Plot12', 'Plot11', 'Plot10', 'Plot07', 'Plot07A', 'Plot09', 'Plot04', 'Plot05', 'Plot06', 'Plot01', 'Plot02', 'Plot03'];
 
     const plotName = plotNames[index];
     const plotMesh = scene.getObjectByName(plotName); // Find the mesh by name in the scene
-    console.log("plotMesh" ,plotMesh)
+
+
 
     if (plotMesh) {
       plotMesh.material.transparent = true; // Ensure the material is set to transparent
@@ -225,12 +240,20 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
 
       // Add an event listener for the Enter key to switch paths
       const onEnterKeyPress = (event: KeyboardEvent) => {
+        console.log("first")
         if (event.code === 'Enter') {
-        const selectedPlot = plots[index]; // Select the plot based on the index
-        switchPath(selectedPlot);
-        isMainPath = false;
-        lastPathLocation = camera_log[index].t; // Use the t value of the current sphere
-        document.removeEventListener('keydown', onEnterKeyPress); // Remove listener after switching
+            readDataFromFile(`/assets/plotData/${plots[index]}.json`)
+            .then((data) => {
+              const selectedPlot = data; // Select the plot based on the index
+              switchPath(selectedPlot);
+              isMainPath = false;
+              lastPathLocation = triggers[index].t; // Use the t value of the current sphere
+            })
+            .catch((error) => {
+              console.error('Error loading plot data:', error);
+            });
+            
+          document.removeEventListener('keydown', onEnterKeyPress); // Remove listener after switching
         }
       };
 
@@ -272,19 +295,10 @@ export function setPathCamera(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       TWEEN.update(performance.now()); // Pass the current time to ensure TWEEN animations are updated
     }
     animate()
-
-    // Add an event listener for the Enter key to switch paths
-    document.addEventListener('keydown', (event) => {
-      if (event.code === 'Enter' && spheres[index].isColliding) {
-        const selectedPlot = plots[index]; // Select the plot based on the index
-        switchPath(selectedPlot);
-        isMainPath = false;
-        lastPathLocation = camera_log[index].t; // Use the t value of the current sphere
-      }
-    });
   });
-
-  function checkEndOfPath() {
+  }
+);
+ async function checkEndOfPath() {
     if (!isMainPath && t >= 1) {
       switchPath(mainPath, true); // Switch back to the main path
       isMainPath = true; // Set the flag to indicate the main path

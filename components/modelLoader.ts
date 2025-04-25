@@ -67,7 +67,7 @@ export function loadLandModel(
       const targetMeshes: THREE.Mesh[] = [];
 
       gltf.scene.traverse((child) => {
-        console.log(child.name)
+        // console.log(child.name)
         if (child instanceof THREE.Mesh && targetMeshNames.includes(child.name)) {
           targetMeshes.push(child);
           if (child.material) {
@@ -77,7 +77,7 @@ export function loadLandModel(
         }
       });
 
-      console.log('Target meshes:', targetMeshes);
+      // console.log('Target meshes:', targetMeshes);
 
       // Call the callback function if provided
       if (onLoadCallback) {
