@@ -101,10 +101,10 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
   path.closed = false;
 
-  // const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
-  // const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
-  // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
-  // scene.add(tubeMesh);
+  const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+  const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
+  const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+  scene.add(tubeMesh);
 
   let t = 0; // Parameter to track position along the path
   let lastPathLocation = 0; // Last location on the path
@@ -116,9 +116,14 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
   function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false) {
     // Update the path with new points
-    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y - 16, point.position.z));
+    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
     path = new THREE.CatmullRomCurve3(points, false, 'chordal');
     path.closed = false;
+
+    const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+    const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide, wireframe: false });
+    const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+    scene.add(tubeMesh);
 
     // Smoothly transition the camera to the new path
     const targetPosition = continueFromLastPosition
@@ -174,7 +179,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     const targetPosition = path.getPointAt(t);
     const targetLookAtPosition = path.getPointAt((t + 0.02) % 1);
 
-    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y + 16, targetPosition.z), lerpFactor * delta * 60);
+    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y+8, targetPosition.z), lerpFactor * delta * 60);
     camera.position.copy(currentCameraPosition);
 
     if (moveForward || moveBackward) {
