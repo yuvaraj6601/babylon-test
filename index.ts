@@ -119,7 +119,10 @@ function startCinematic(foundMesh: THREE.Mesh) {
     timeline.call(() => {
       setPathCamera(scene, camera);
       camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+
       camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
+
+      camera.rotation.set(0, -0.5052000000178812, 0);
     });
 }
 
