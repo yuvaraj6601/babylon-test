@@ -24,7 +24,8 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true, // Disable for postprocessing performance
   powerPreference: 'high-performance',
   // stencil: false, // Often not needed for postprocessing
-  depth: true
+  depth: true,
+  depthWrite: true
 });
 renderer.setPixelRatio(window.devicePixelRatio)
 
@@ -47,22 +48,16 @@ document.body.appendChild(renderer.domElement);
 // Set up EffectComposer
 const composer = new EffectComposer(renderer, {
   depthBuffer: true, // Ensure depth buffer is enabled
-  stencilBuffer: false
+  stencilBuffer: false,
 });
 
-setupEnvironment(scene, renderer); // Call the environment setup function
 
-// setupFPSCamera(scene, camera); // Call the FPS camera setup function
-
-// createGrass(scene);
-addEffects(scene, camera, composer); // Call the addEffects function
-addLights(scene); // Call the addLights function
 // Enable shadows in the renderer
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = '/public/assets/models/KaliMark_lamp_post.glb'; // Path to the model
+const modelpath = '/public/assets/models/KaliMark_Lamp_post_fixed.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
@@ -82,6 +77,12 @@ function addcontrolledCamera() {
     }
 
     scene.children.forEach(traverseAndFind);
+
+    setupEnvironment(scene, renderer); // Call the environment setup function
+
+    // createGrass(scene);
+    addEffects(scene, camera, composer); // Call the addEffects function
+    addLights(scene); // Call the addLights function
 
     return foundMeshes;
   }

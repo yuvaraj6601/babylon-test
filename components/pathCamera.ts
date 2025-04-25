@@ -97,14 +97,14 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   const mainPath = await readDataFromFile(`/assets/plotData/mainPath.json`)
   // Create a tube geometry based on the mainPath
 
-  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y-16, point.position.z));
+  let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y, point.position.z));
   let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
   path.closed = false;
 
-  const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
-  const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
-  const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
-  scene.add(tubeMesh);
+  // const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+  // const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
+  // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+  // scene.add(tubeMesh);
 
   let t = 0; // Parameter to track position along the path
   let lastPathLocation = 0; // Last location on the path
@@ -120,10 +120,10 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     path = new THREE.CatmullRomCurve3(points, false, 'chordal');
     path.closed = false;
 
-    const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
-    const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide, wireframe: false });
-    const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
-    scene.add(tubeMesh);
+    // const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+    // const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide, wireframe: false });
+    // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+    // scene.add(tubeMesh);
 
     // Smoothly transition the camera to the new path
     const targetPosition = continueFromLastPosition
@@ -179,7 +179,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     const targetPosition = path.getPointAt(t);
     const targetLookAtPosition = path.getPointAt((t + 0.02) % 1);
 
-    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y+8, targetPosition.z), lerpFactor * delta * 60);
+    currentCameraPosition.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y+16, targetPosition.z), lerpFactor * delta * 60);
     camera.position.copy(currentCameraPosition);
 
     if (moveForward || moveBackward) {
@@ -231,13 +231,11 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
 
     triggers.forEach((logEntry, index) => {
-    const plots = ['plot15', 'plot16', 'plot16a', 'plot14', 'plot12a', 'plot12', 'plot11', 'plot10', 'plot7', 'plot7a', 'plot9', 'plot4', 'plot5', 'plot6', 'plot1', 'plot2', 'plot3'];
-    const plotNames = ['Plot15', 'Plot16', 'Plot16A', 'Plot14', 'Plot12A', 'Plot12', 'Plot11', 'Plot10', 'Plot07', 'Plot07A', 'Plot09', 'Plot04', 'Plot05', 'Plot06', 'Plot01', 'Plot02', 'Plot03'];
+    const plots = ['plot3', 'plot2', 'plot1', 'plot6', 'plot5', 'plot4', 'plot9', 'plot7a', 'plot7', 'plot10', 'plot11', 'plot12', 'plot12a', 'plot14', 'plot16a', 'plot16', 'plot15'];
+    const plotNames = ['Plot03', 'Plot02', 'Plot01', 'Plot06', 'Plot05', 'Plot04', 'Plot09', 'Plot07A', 'Plot07', 'Plot10', 'Plot11', 'Plot12', 'Plot12A', 'Plot14', 'Plot16A', 'Plot16', 'Plot15'];
 
     const plotName = plotNames[index];
     const plotMesh = scene.getObjectByName(plotName); // Find the mesh by name in the scene
-
-
 
     if (plotMesh) {
       plotMesh.material.transparent = true; // Ensure the material is set to transparent
@@ -249,7 +247,6 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     function handleCollisionEnter() {
       if (!isColliding) {
       isColliding = true;
-      console.log("plotMesh", index);
       if (plotMesh) {
         plotMesh.material.opacity = 1;
 
@@ -266,7 +263,6 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
       // Add an event listener for the Enter key to switch paths
       const onEnterKeyPress = (event: KeyboardEvent) => {
-        console.log("first")
         if (event.code === 'Enter') {
             readDataFromFile(`/assets/plotData/${plots[index]}.json`)
             .then((data) => {
@@ -307,7 +303,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     // Add collision detection logic
     function checkSphereCollision() {
       const distance = camera.position.distanceTo(spheres[index].position);
-      if (distance < 30) { // Adjust collision threshold as needed
+      if (distance < 20) { // Adjust collision threshold as needed
         handleCollisionEnter();
       } else {
         handleCollisionExit();
