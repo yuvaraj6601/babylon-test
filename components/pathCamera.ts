@@ -99,12 +99,12 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
   let points = mainPath.map((point) => new THREE.Vector3(point.position.x, point.position.y-16, point.position.z));
   let path = new THREE.CatmullRomCurve3(points, false, 'chordal'); // Use 'centripetal' for smoother interpolation
-  path.closed = true;
+  path.closed = false;
 
-  const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
-  const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
-  const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
-  scene.add(tubeMesh);
+  // const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
+  // const tubeMaterial = new THREE.MeshBasicMaterial({color: 0x00ff, side: THREE.DoubleSide, wireframe: false});
+  // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+  // scene.add(tubeMesh);
 
   let t = 0; // Parameter to track position along the path
   let lastPathLocation = 0; // Last location on the path
@@ -114,28 +114,47 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   const currentLookAtPosition = new THREE.Vector3(-541.4250755705959, -34.24183544050365, 35.98386625888884);
 
 
-  function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false, ) {
+  function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false) {
     // Update the path with new points
-    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y-16, point.position.z));
+    points = newPathPoints.map((point) => new THREE.Vector3(point.position.x, point.position.y - 16, point.position.z));
     path = new THREE.CatmullRomCurve3(points, false, 'chordal');
-    path.closed = true;
+    path.closed = false;
 
-    const tubeGeometry = new THREE.TubeGeometry(path, 100, 2, 8, false);
-    const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide, wireframe: false });
-    const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
-    scene.add(tubeMesh);
+    // Smoothly transition the camera to the new path
+    const targetPosition = continueFromLastPosition
+      ? path.getPointAt(lastPathLocation)
+      : path.getPointAt(0);
 
-    if(continueFromLastPosition) {
-        const lastPosition = path.getPointAt(lastPathLocation);
-        camera.position.copy(lastPosition);
-        currentCameraPosition.copy(lastPosition);
-    }else{
-      // Reset the movement parameter and camera position
-      t = 0;
-      const startPosition = path.getPointAt(0);
-      camera.position.copy(startPosition);
-      currentCameraPosition.copy(startPosition);
-    }
+    const transitionDuration = 2000; // Duration of the transition in milliseconds
+    const startPosition = camera.position.clone();
+
+    new TWEEN.Tween(startPosition)
+      .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, transitionDuration)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate(() => {
+        camera.position.set(startPosition.x, startPosition.y, startPosition.z);
+        currentCameraPosition.copy(camera.position);
+      })
+      .onComplete(() => {
+        currentCameraPosition.copy(targetPosition);
+        if (!continueFromLastPosition) {
+          t = 0; // Reset the movement parameter
+        }
+      })
+      .start();
+
+    // Optionally, smoothly adjust the camera's look-at direction
+    const targetLookAt = path.getPointAt((lastPathLocation + 0.02) % 1);
+    const startLookAt = currentLookAtPosition.clone();
+
+    new TWEEN.Tween(startLookAt)
+      .to({ x: targetLookAt.x, y: targetLookAt.y, z: targetLookAt.z }, transitionDuration)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate(() => {
+        currentLookAtPosition.set(startLookAt.x, startLookAt.y, startLookAt.z);
+        camera.lookAt(currentLookAtPosition);
+      })
+      .start();
   }
 
   function updateCamera() {
@@ -160,8 +179,10 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
     if (moveForward || moveBackward) {
       // Look along the path when moving
-      currentLookAtPosition.lerp(targetLookAtPosition, lerpFactor * delta * 60);
-      camera.lookAt(currentLookAtPosition);
+      const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(
+        new THREE.Matrix4().lookAt(camera.position, targetLookAtPosition, new THREE.Vector3(0, 1, 0))
+      );
+      camera.quaternion.slerp(targetQuaternion, lerpFactor * delta * 60);
       // Optionally, reset manual yaw here if you want
     } else {
       // Allow manual yaw when not moving
