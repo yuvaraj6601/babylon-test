@@ -71,12 +71,27 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
           console.log('Removed Camera Data:', removedData);
 
           // Remove the last sphere from the scene
-          const lastSphere = scene.children.find(
-        (child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry
-          );
-          if (lastSphere) {
-        scene.remove(lastSphere);
-          }
+            // Remove all spheres from the scene
+            scene.children
+            .filter((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry)
+            .forEach((sphere) => scene.remove(sphere));
+
+            // Add spheres back based on the updated recordedData
+            recordedData.forEach((data) => {
+            const sphereGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+            const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.copy(data.position).setY(data.position.y);
+            scene.add(sphere);
+            });
+
+            recordedData.forEach((data) => {
+              const sphereGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+              const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+              const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+              sphere.position.copy(data.position).setY(data.position.y);
+              scene.add(sphere);
+            });
         } else {
           console.log('No data to remove.');
         }
