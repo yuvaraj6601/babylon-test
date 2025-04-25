@@ -48,40 +48,39 @@ export function setupControlledCamera(scene: THREE.Scene, camera: THREE.Perspect
       case 'ArrowRight': // Rotate camera right
         turnRight = true;
         break;
-      case 'KeyR': // Record camera data
+      case 'KeyR': // Record camera data and create a sphere
         const position = camera.position.clone();
         const rotation = camera.rotation.clone();
         const scale = camera.scale.clone();
         recordedData.push({ position, rotation, scale });
         console.log('Recorded Camera Data:', { position, rotation, scale });
+
+        // Create a sphere at the recorded position
+        const sphereGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        sphere.position.copy(position).setY(position.y);
+        scene.add(sphere);
         break;
       case 'KeyG': // Save recorded data to a file
         saveDataToFile(recordedData, 'plot.json');
-        // saveDataToFile(plotData, 'plots.json');
         break;
-      case 'KeyY': // Delete the last value in the array
+      case 'KeyY': // Delete the last value in the array and remove the last sphere
         if (recordedData.length > 0) {
           const removedData = recordedData.pop(); // Remove the last entry
           console.log('Removed Camera Data:', removedData);
+
+          // Remove the last sphere from the scene
+          const lastSphere = scene.children.find(
+        (child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry
+          );
+          if (lastSphere) {
+        scene.remove(lastSphere);
+          }
         } else {
           console.log('No data to remove.');
         }
         break;
-      case 'KeyO': // Delete the last value in the array
-        if (recordedData.length > 0) {
-          const removedplotData = plotData.pop(); // Remove the last entry
-          console.log('Removed Camera Data:', removedplotData);
-        } else {
-          console.log('No data to remove.');
-        }
-        break;
-      // case 'KeyP': // Add camera data to plotData and save to a separate file
-      //   const plotPosition = camera.position.clone();
-      //   const plotRotation = camera.rotation.clone();
-      //   const plotScale = camera.scale.clone();
-      //   plotData.push({ position: plotPosition, rotation: plotRotation, scale: plotScale });
-      //   console.log('Added to Plot Data:', { position: plotPosition, rotation: plotRotation, scale: plotScale });
-      //   break;
     }
   };
 

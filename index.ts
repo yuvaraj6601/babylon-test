@@ -36,13 +36,13 @@ document.body.appendChild(renderer.domElement);
 
 
 // // add controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Enable smooth damping for better user experience
-controls.dampingFactor = 0.05; // Adjust damping factor
-controls.minDistance = 1; // Set minimum zoom distance
-controls.maxDistance = 10000; // Set maximum zoom distance
-controls.target.set(0, 0, 0); // Set the target point for the camera to look at
-controls.update(); // Update controls
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.enableDamping = true; // Enable smooth damping for better user experience
+// controls.dampingFactor = 0.05; // Adjust damping factor
+// controls.minDistance = 1; // Set minimum zoom distance
+// controls.maxDistance = 10000; // Set maximum zoom distance
+// controls.target.set(0, 0, 0); // Set the target point for the camera to look at
+// controls.update(); // Update controls
 
 // Set up EffectComposer
 const composer = new EffectComposer(renderer, {
@@ -93,7 +93,8 @@ function addcontrolledCamera() {
     // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
 
     // setPathCamera(scene, camera);
-    // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+    camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+    camera.rotation.set(0, -0.5052000000178812, 0);
     // camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
   } else {
     console.log('Mesh not found');
@@ -122,7 +123,6 @@ function startCinematic(foundMesh: THREE.Mesh) {
 
       camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
 
-      camera.rotation.set(0, -0.5052000000178812, 0);
     });
 }
 
