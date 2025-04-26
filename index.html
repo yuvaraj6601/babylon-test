@@ -21,8 +21,13 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background-color: #000000cc;
       flex-direction: column;
+    }
+    .app-container{
+      display: flex;
+      width: 100%;
+      height: 100%;
+      background-color: #000000cc;
     }
     .container {
       display: flex;
@@ -54,7 +59,7 @@
       left: 40px;
     }
     .button {
-      display: none;
+      /* display: none; */
       background-color: #96702A;
       color: white;
       padding: 10px 20px;
@@ -64,7 +69,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       margin-bottom: 180px;
-      margin-top: 30px ;
+      margin-top: 30px;
 
     }
     .progress {
@@ -75,36 +80,354 @@
       font-family: 'Playfair Display', 'Arial', serif;
       margin-bottom: 210px;
     }
+
+    .accordian-container {
+      display: none;
+      position: absolute;
+      right: 0;
+      top:10%;
+      bottom: 10%;
+      width: 20%;  
+      height: 80%;
+      flex-direction: column;
+      background-color: #96702A;
+      padding: 20px;
+      font-family:  'Arial', serif;
+    }
+    .accordion {
+      background-color: #eee;
+      color: #444;
+      cursor: pointer;
+      padding: 18px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+      transition: 0.4s;
+      font-family:  'Arial', serif;
+    }
+  
+    .active,
+    .accordion:hover {
+      background-color: #ccc;
+    }
+  
+    .accordion:after {
+      content: '\002B';
+      color: #777;
+      font-weight: bold;
+      float: right;
+      margin-left: 5px;
+    }
+  
+    .active:after {
+      content: "\2212";
+    }
+  
+    .panel {
+      padding: 0 18px;
+      background-color: white;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+    }
+    .accordion-title{
+      color: #ffffff;
+    }
+    .menu{
+      position: absolute;
+      right: 0;
+      top:0;
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .menu div{
+      color: #96702A;
+      font-size: 20px;
+      font-family: 'Playfair Display', 'Arial', serif;
+    }
+    .close{
+      position: absolute;
+      top:30px;
+      right: 10px;
+      padding: 10px;
+    }
   </style>
 </head>
 
 <body>
   <div class="app" >
-    <div class="kali_logo">
-      <img src="./public/assets/icons/KALI-GROUP-LOGO.svg" alt="Crown Boulevard Logo" width="120" height="120">
+    <div class="menu" id="menuBtn" style="display: none;">
+      <img src="./public/assets/icons/Crown-Boulevard-Logo.svg" alt="Crown Boulevard Logo" width="80" height="80">
     </div>
-    <div class="container">
+
+    <div class="app-container">
+      <div class="kali_logo">
+        <img src="./public/assets/icons/KALI-GROUP-LOGO.svg" alt="Crown Boulevard Logo" width="120" height="120">
+      </div>
+      <div class="container">
  
       <div class="crown_logo">
-        <img src="./public/assets/icons/Crown-Boulevard-Logo.svg" alt="Crown Boulevard Logo" width="400" height="400">
+          <img src="./public/assets/icons/Crown-Boulevard-Logo.svg" alt="Crown Boulevard Logo" width="400" height="400">
+        </div>
+        <div class="title">Experience the Virtual World of Crown Boulevard</div>
+        <div class="progress" id="progress">Please wait while we are loading your experience</div>
+        <div class="button" id="enter-btn">Enter</div>
       </div>
-      <div class="title">Experience the Virtual World of Crown Boulevard</div>
-      <div class="progress" id="progress">Please wait while we are loading your experience</div>
-      <div class="button" id="enter-btn">Enter</div>
-      <script>
-        const btn = document.getElementById('enter-btn');
-        btn.addEventListener('click', () => {
-          const app = document.querySelector('.app');
-          app.style.transition = 'opacity 2.0s';
-          app.style.opacity = '0';
-          app.addEventListener('transitionend', function handler() {
-        app.style.display = 'none';
-        app.removeEventListener('transitionend', handler);
-          });
-        });
-      </script>
+    </div>
+    <div class="accordian-container" id="accordian-container">
+      <h2 class="accordion-title">Settings</h2>
+      <div id="closeBtn" class="close"> <img src="./public/assets/icons/close.png" width="20px" height="20px" /> </div>
+      <!-- <button class="accordion">Explore Plots</button>
+      <div class="panel">
+      </div> -->
       
+      <button class="accordion">Environment</button>
+      <div class="panel">
+      </div>
+      <button class="accordion">Lights</button>
+      <div class="panel">
+      </div>
     </div>
   </body>
+  <script>
+    const btn = document.getElementById('enter-btn');
+    const menuBtn = document.getElementById('menuBtn');
+    btn.addEventListener('click', () => {
+      const app = document.querySelector('.app-container');
+      app.style.transition = 'opacity 2.0s';
+      app.style.opacity = '0';
+      app.addEventListener('transitionend', function handler() {
+        app.style.display = 'none';
+        menuBtn.style.display = "block"
+        app.removeEventListener('transitionend', handler);
+      });
+    });
+
+    menuBtn.addEventListener('click', () => {
+      const accordion = document.querySelector('.accordian-container');
+      accordion.style.display = "block";
+      // accordion.style.transition = 'opacity 1.0s'
+      // accordion.style.opacity = '1.0';
+      //   accordion.addEventListener('transitionend', function handler() {
+      //     accordion.removeEventListener('transitionend', handler);
+      //   });
+    });
+
+    const closeBtn = document.getElementById('closeBtn');
+      closeBtn.addEventListener('click', () => {
+        const accordion = document.querySelector('.accordian-container');
+        // accordion.style.transition = 'opacity 2.0s'
+        // accordion.style.opacity = '0';
+        // accordion.addEventListener('transitionend', function handler() {
+          accordion.style.display = "none";
+          // accordion.removeEventListener('transitionend', handler);
+        // });
+      });
+
+  </script>
+  <script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+    for (i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.maxHeight) {
+          panel.style.maxHeight = null;
+        } else {
+          panel.style.maxHeight = panel.scrollHeight + "px";
+        }
+      });
+    }
+
+    // const explorePlotsPanel = document.querySelector('.accordion:nth-of-type(1) + .panel');
+
+    // const plots = [
+    //   { sNo: 1, plotNo: 'A101', sqft: 1200 },
+    //   { sNo: 2, plotNo: 'A102', sqft: 1500 },
+    //   { sNo: 3, plotNo: 'B201', sqft: 1800 },
+    //   { sNo: 4, plotNo: 'B202', sqft: 2000 }
+    // ];
+
+    // const list = document.createElement('div');
+    // list.style.overflowY = 'auto';
+    // list.style.maxHeight = '600px'; // Increased height of the list
+    // // Create a title row
+    // const titleRow = document.createElement('div');
+    // titleRow.style.display = 'flex';
+    // titleRow.style.justifyContent = 'space-between';
+    // titleRow.style.padding = '10px 0';
+    // titleRow.style.backgroundColor = '#d3d3d3'; // Title row background color
+    // titleRow.style.marginBottom = '10px';
+    // titleRow.style.borderRadius = '5px'; // Added corner radius to title row
+    // titleRow.style.fontWeight = 'bold'; // Bold text for titles
+    // titleRow.style.fontFamily = 'Arial'; // Added font family
+
+    // const sNoTitle = document.createElement('span');
+    // sNoTitle.textContent = 'S.No';
+    // sNoTitle.style.flex = '1';
+    // sNoTitle.style.textAlign = 'center';
+    // sNoTitle.style.fontFamily = 'Arial'; // Added font family
+
+    // const plotNoTitle = document.createElement('span');
+    // plotNoTitle.textContent = 'Plot No';
+    // plotNoTitle.style.flex = '2';
+    // plotNoTitle.style.textAlign = 'center';
+    // plotNoTitle.style.fontFamily = 'Arial'; // Added font family
+
+    // const sqftTitle = document.createElement('span');
+    // sqftTitle.textContent = 'Sqft';
+    // sqftTitle.style.flex = '2';
+    // sqftTitle.style.textAlign = 'center';
+    // sqftTitle.style.fontFamily = 'Arial'; // Added font family
+
+    // titleRow.appendChild(sNoTitle);
+    // titleRow.appendChild(plotNoTitle);
+    // titleRow.appendChild(sqftTitle);
+    // list.appendChild(titleRow);
+
+    // plots.forEach(plot => {
+    //   const row = document.createElement('div');
+    //   row.style.display = 'flex';
+    //   row.style.justifyContent = 'space-between';
+    //   row.style.padding = '10px 0';
+    //   row.style.backgroundColor = '#f9f9f9';
+    //   row.style.marginBottom = '10px'; // Added padding between rows
+    //   row.style.borderRadius = '5px'; // Added corner radius to rows
+    //   row.style.cursor = 'pointer'; // Added cursor pointer for clickability
+    //   row.style.fontFamily = 'Arial'; // Added font family
+
+    //   row.onclick = () => {
+    //   alert(`Plot No: ${plot.plotNo}, Size: ${plot.sqft} sqft`);
+    //   }; // Added onclick function
+
+    //   row.onmouseover = () => {
+    //   row.style.backgroundColor = '#e0e0e0'; // Highlight on hover
+    //   };
+
+    //   row.onmouseout = () => {
+    //   row.style.backgroundColor = '#f9f9f9'; // Reset background color
+    //   };
+
+    //   const sNo = document.createElement('span');
+    //   sNo.textContent = `${plot.sNo}`;
+    //   sNo.style.flex = '1';
+    //   sNo.style.textAlign = 'center';
+    //   sNo.style.fontFamily = 'Arial'; // Added font family
+
+    //   const plotNo = document.createElement('span');
+    //   plotNo.textContent = `${plot.plotNo}`;
+    //   plotNo.style.flex = '2';
+    //   plotNo.style.textAlign = 'center';
+    //   plotNo.style.fontFamily = 'Arial'; // Added font family
+
+    //   const sqft = document.createElement('span');
+    //   sqft.textContent = `${plot.sqft}`;
+    //   sqft.style.flex = '2';
+    //   sqft.style.textAlign = 'center';
+    //   sqft.style.fontFamily = 'Arial'; // Added font family
+
+    //   row.appendChild(sNo);
+    //   row.appendChild(plotNo);
+    //   row.appendChild(sqft);
+    //   list.appendChild(row);
+    // });
+
+    // list.style.paddingTop = '10px'; // Added padding on list top
+    // explorePlotsPanel.appendChild(list);
+
+    
+    const environmentPanel = document.querySelector('.accordion:nth-of-type(1) + .panel');
+
+    const environments = [
+      { id: 'env1', label: 'Night Sky' },
+      { id: 'env2', label: 'Sunset' },
+      { id: 'env3', label: 'Cloudy Morning' },
+      { id: 'env4', label: 'Clear sky' }
+    ];
+
+    environments.forEach(env => {
+      const button = document.createElement('button');
+      button.id = env.id;
+      button.textContent = env.label;
+      button.style.display = 'block';
+      button.style.margin = '10px 0';
+      button.style.padding = '10px';
+      button.style.backgroundColor = '#96702A';
+      button.style.color = 'white';
+      button.style.border = 'none';
+      button.style.borderRadius = '5px';
+      button.style.cursor = 'pointer';
+      button.style.fontFamily = 'Arial';
+
+      button.onmouseover = () => {
+        button.style.backgroundColor = '#805c22';
+      };
+
+      button.onmouseout = () => {
+        button.style.backgroundColor = '#96702A';
+      };
+
+      // button.onclick = () => {
+      //   alert(`Environment selected: ${env.label}`);
+      // };
+
+      environmentPanel.appendChild(button);
+    });
+
+    const lightsPanel = document.querySelector('.accordion:nth-of-type(2) + .panel');
+
+    const toggleLampPostButton = document.createElement('button');
+    toggleLampPostButton.textContent = 'Toggle Lights On';
+    toggleLampPostButton.style.display = 'block';
+    toggleLampPostButton.style.margin = '10px 0';
+    toggleLampPostButton.style.padding = '10px';
+    toggleLampPostButton.style.backgroundColor = '#96702A';
+    toggleLampPostButton.style.color = 'white';
+    toggleLampPostButton.style.border = 'none';
+    toggleLampPostButton.style.borderRadius = '5px';
+    toggleLampPostButton.style.cursor = 'pointer';
+    toggleLampPostButton.style.fontFamily = 'Arial';
+    toggleLampPostButton.id = 'toggleLampPostButtonOn';
+
+    toggleLampPostButton.onmouseover = () => {
+      toggleLampPostButton.style.backgroundColor = '#805c22';
+    };
+
+    toggleLampPostButton.onmouseout = () => {
+      toggleLampPostButton.style.backgroundColor = '#96702A';
+    };
+
+
+    lightsPanel.appendChild(toggleLampPostButton);
+
+    const toggleNumberLightsButton = document.createElement('button');
+    toggleNumberLightsButton.textContent = 'Toggle Lights Off';
+    toggleNumberLightsButton.style.display = 'block';
+    toggleNumberLightsButton.style.margin = '10px 0';
+    toggleNumberLightsButton.style.padding = '10px';
+    toggleNumberLightsButton.style.backgroundColor = '#96702A';
+    toggleNumberLightsButton.style.color = 'white';
+    toggleNumberLightsButton.style.border = 'none';
+    toggleNumberLightsButton.style.borderRadius = '5px';
+    toggleNumberLightsButton.style.cursor = 'pointer';
+    toggleNumberLightsButton.style.fontFamily = 'Arial';
+    toggleNumberLightsButton.id = "toggleLampPostButtonOff"
+
+    toggleNumberLightsButton.onmouseover = () => {
+      toggleNumberLightsButton.style.backgroundColor = '#805c22';
+    };
+
+    toggleNumberLightsButton.onmouseout = () => {
+      toggleNumberLightsButton.style.backgroundColor = '#96702A';
+    };
+
+    lightsPanel.appendChild(toggleNumberLightsButton);
+  </script>
   <script type="module" src="/index.ts"></script>
 </html>

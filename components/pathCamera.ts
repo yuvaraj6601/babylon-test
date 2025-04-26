@@ -4,7 +4,8 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { readDataFromFile, saveDataToFile, saveTDataToFile } from '../helpers/functions';
 import * as TWEEN from '@tweenjs/tween.js';
 
-export async function setPathCamera (scene: THREE.Scene, camera: THREE.PerspectiveCamera){
+export async function setPathCamera (scene: THREE.Scene, camera: THREE.PerspectiveCamera){;
+
   const controls = new PointerLockControls(camera, document.body);
   let isMainPath = true; // Flag to track the current path
 
@@ -172,7 +173,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   function updateCamera() {
     const delta = clock.getDelta();
     const moveDistance = velocity * delta;
-    const turnSpeed = 1.5 * delta;
+    const turnSpeed = 1.0 * delta;
 
     // Update t along the path
     if (moveForward) t += moveDistance / path.getLength();
@@ -198,9 +199,15 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
       // Optionally, reset manual yaw here if you want
     } else {
       // Allow manual yaw when not moving
-      if (turnLeft || turnRight) {
-        const targetRotationY = camera.rotation.y + (turnLeft ? turnSpeed : -turnSpeed);
-        camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, targetRotationY, 0.2 * delta * 720);
+      if (turnRight) {
+        // camera.rotation.y -= 0.1; // Adjust rotation directly
+        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -turnSpeed);
+
+      }
+
+      if (turnLeft) {
+        // camera.rotation.y += 0.1; // Adjust rotation directly
+        camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), turnSpeed);
       }
     }
   }
