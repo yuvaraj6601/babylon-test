@@ -12,6 +12,53 @@ export function loadLandModel(
   manager.addHandler(/\.tga$/i, new TGALoader());
   manager.addHandler(/\.tif$/i, new THREE.TextureLoader());
 
+  // Add a progress bar or loading indicator
+  manager.onProgress = (url: string, itemsLoaded: number, itemsTotal: number) => {
+    console.log(`Loading ${url}: ${itemsLoaded} of ${itemsTotal} items loaded`);
+    const loadingBar = document.getElementById('progress') as HTMLDivElement | null;
+    if (!loadingBar) {
+      console.warn('Loading bar element with ID "progress" not found in the DOM.');
+      return;
+    }
+
+    loadingBar.style.display = 'block'; // Show the loading bar
+    loadingBar.innerText = `Please wait while we are loading your experience  (${itemsLoaded}/${itemsTotal})`;
+
+    const enterButton = document.getElementById('enter-btn') as HTMLDivElement;
+    if (enterButton) {
+      enterButton.style.display = 'none'; // Hide the button
+    }
+
+  };
+
+  manager.onLoad = () => {
+    console.log('All assets loaded successfully.');
+    const enterButton = document.getElementById('enter-btn') as HTMLDivElement;
+    if (enterButton) {
+      enterButton.style.display = 'block'; // Hide the button
+    }
+    const loadingBar = document.getElementById('progress') as HTMLDivElement;
+    if (loadingBar) {
+      loadingBar.style.display = 'none'; // Show the loading bar
+    }
+  };
+
+  manager.onError = (url) => {
+    const enterButton = document.getElementById('enter-btn') as HTMLButtonElement;
+    if (enterButton) {
+      enterButton.style.display = 'block'; // Hide the button
+      enterButton.innerText = 'Refresh'; // Show error message
+      enterButton.onclick = () => {
+        window.location.reload(); // Refresh the page
+      };
+    }
+    const loadingBar = document.getElementById('progress') as HTMLDivElement;
+    if (loadingBar) {
+      loadingBar.style.display = 'none'; // Show the loading bar
+    }
+    console.error(`There was an error loading ${url}`);
+  };
+
   const landModelLoader = new GLTFLoader(manager); // Initialize GLTFLoader
 
   landModelLoader.load(
@@ -21,6 +68,7 @@ export function loadLandModel(
       const parentNode = new THREE.Object3D(); // Create an empty node
       parentNode.position.set(0, 0, 0); // Set position to (0, 0, 0)
       scene.add(parentNode); // Add the empty node to the scene
+      parentNode.name = 'LandModel'; // Set the name of the loaded model
 
       gltf.scene.scale.set(10, 10, 10); // Adjust scale as needed
       gltf.scene.position.set(0, -1000, 0); // Adjust position as needed
@@ -32,15 +80,6 @@ export function loadLandModel(
         if (child instanceof THREE.Mesh) {
           child.castShadow = true; // Enable shadow casting
           child.receiveShadow = true; // Enable shadow receiving (optional)
-          if (child.material) {
-            const material = child.material;
-            if (material.name === 'Material.003') {
-              material.transparent = true; // Example: Make the material transparent
-              material.opacity = 1; // Example: Set opacity to 50%
-              material.color.set(0xFFD700); // Example: Change color to gold
-              material.metalness = 1.; // Example: Set metalness to 0.5
-            }
-          }
         }
       });
 
@@ -67,24 +106,40 @@ export function loadLandModel(
       const targetMeshes: THREE.Mesh[] = [];
 
       gltf.scene.traverse((child) => {
-        // console.log(child.name)
         if (child instanceof THREE.Mesh && targetMeshNames.includes(child.name)) {
           targetMeshes.push(child);
           if (child.material) {
-        child.material.transparent = true;
-        child.material.opacity = 0; // Set opacity to 0
+              child.material.transparent = true;
+              child.material.opacity = 0; // Set opacity to 0
           }
         }
       });
-
-      // console.log('Target meshes:', targetMeshes);
 
       // Call the callback function if provided
       if (onLoadCallback) {
         onLoadCallback(gltf.scene);
       }
     },
-    undefined, // Optional progress callback
+    (xhr) => {
+      // Optional progress callback
+      if (xhr.lengthComputable) {
+        const percentComplete = (xhr.loaded / xhr.total) * 100;
+        console.log(`Model loading: ${Math.round(percentComplete)}% complete`);
+        const loadingBar = document.getElementById('progress') as HTMLDivElement | null;
+        if (!loadingBar) {
+          console.warn('Loading bar element with ID "progress" not found in the DOM.');
+          return;
+        }
+
+        loadingBar.style.display = 'block'; // Show the loading bar
+        loadingBar.innerText = `Please wait while we are loading your experience ${percentComplete.toFixed(0)}%`;
+
+        const enterButton = document.getElementById('enter-btn') as HTMLDivElement;
+        if (enterButton) {
+          enterButton.style.display = 'none'; // Hide the button
+        }
+      }
+    },
     (error) => {
       // Handle errors during loading
       console.error('An error occurred while loading the GLB model:', error);

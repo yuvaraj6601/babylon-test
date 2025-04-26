@@ -9,9 +9,10 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   let isMainPath = true; // Flag to track the current path
 
   const triggers: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3; t: number }> = [];
+  // Disable mouse controls and mouse click
 
   document.addEventListener('click', () => {
-    controls.lock();
+    // controls.lock();
   });
 
   controls.addEventListener('lock', () => {
@@ -24,7 +25,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
   scene.add(controls.getObject());
 
-  let velocity = 50; // Initial velocity
+  let velocity = 80; // Initial velocity
 
   document.addEventListener('keydown', (event) => {
     if (event.code === 'Equal') { // '+' key
@@ -110,8 +111,8 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   let lastPathLocation = 0; // Last location on the path
   const lerpFactor = 0.1; // Factor for smoothing camera movement
 
-  const currentCameraPosition = new THREE.Vector3(-541.4250755705959, -34.24183544050365, 35.98386625888884);
-  const currentLookAtPosition = new THREE.Vector3(-541.4250755705959, -34.24183544050365, 35.98386625888884);
+  const currentCameraPosition = new THREE.Vector3( -593.1666206316243,-58.77807395693095,155.86438266969157);
+  const currentLookAtPosition = new THREE.Vector3(-511.07808957971827, -28.033032820257773, 26.949399991116252);
 
 
   function switchPath(newPathPoints: Array<{ position: { x: number; y: number; z: number } }>, continueFromLastPosition = false) {
@@ -309,7 +310,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     // Add collision detection logic
     function checkSphereCollision() {
       const distance = camera.position.distanceTo(spheres[index].position);
-      if (distance < 20) { // Adjust collision threshold as needed
+      if (distance < 15) { // Adjust collision threshold as needed
         handleCollisionEnter();
       } else {
         handleCollisionExit();
@@ -327,10 +328,10 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   }
 );
  async function checkEndOfPath() {
-    if (!isMainPath && t >= 1) {
+    if (!isMainPath && t >= 0.97) {
       switchPath(mainPath, true); // Switch back to the main path
       isMainPath = true; // Set the flag to indicate the main path
-      t = lastPathLocation; // Restore the last location on the main path
+      t = lastPathLocation + 0.025; // Restore the last location on the main path
     }
   }
 

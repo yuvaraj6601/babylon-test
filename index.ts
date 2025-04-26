@@ -35,6 +35,14 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+document.addEventListener('mousedown', (event) => {
+  event.preventDefault();
+});
+
+document.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+});
+
 
 // // add controls
 // const controls = new OrbitControls(camera, renderer.domElement);
@@ -57,7 +65,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = '/public/assets/models/KaliMark_Lamp_post_fixed.glb'; // Path to the model
+const modelpath = 'assets/models/KaliMark_Gate.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
@@ -90,7 +98,7 @@ function addcontrolledCamera() {
   const foundMesh = findMeshesByNames(scene, ["3DGeom-5", "3DGeom-113", "3DGeom-3"]);
   if (foundMesh) {
     console.log('Found mesh:', foundMesh);
-    startCinematic();
+    // startCinematic();
     // setupControlledCamera(scene, camera, foundMesh); // Call the controlled camera setup function
     // setPathCamera(scene, camera);
     // camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
@@ -112,31 +120,33 @@ function startCinematic() {
         duration: point.duration, // Default duration if not specified
         ease: 'expo.inOut',
         onUpdate: () => {
-          camera.lookAt( -536.7885235499837, -31.3894295837718, 27.600621935653407);
+          // camera.lookAt( -536.7885235499837, -31.3894295837718, 27.600621935653407);
+          camera.lookAt(-511.07808957971827,-28.033032820257773,26.949399991116252)
+
         },
       });
     });
 
     timeline.call(() => {
       setPathCamera(scene, camera);
-      camera.position.set(-541.4250755705959, -34.24183544050365, 35.98386625888884);
-      camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
+      camera.position.set(-593.1666206316243,-58.77807395693095,155.86438266969157);
+      camera.lookAt(-511.07808957971827, -28.033032820257773, 26.949399991116252);
     });
 }
 
 const cameraData: { position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }[] = [];
 
 window.addEventListener('keydown', (event) => {
-  // if (event.key === 'r') {
-  //   const position = camera.position.clone();
-  //   const rotation = camera.rotation.clone();
-  //   const scale = camera.scale.clone();
-  //   cameraData.push({ position, rotation, scale });
-  //   console.log('Camera data added:', { position, rotation, scale });
-  // } else if (event.key === 'g') {
-  //   saveDataToFile(cameraData, 'cameraData.json');
-  //   console.log('Camera data saved to file.');
-  // }
+  if (event.key === 'r') {
+    const position = camera.position.clone();
+    const rotation = camera.rotation.clone();
+    const scale = camera.scale.clone();
+    cameraData.push({ position, rotation, scale });
+    console.log('Camera data added:', { position, rotation, scale });
+  } else if (event.key === 'g') {
+    saveDataToFile(cameraData, 'cameraData.json');
+    console.log('Camera data saved to file.');
+  }
 });
 
 window.addEventListener('resize', () => {
@@ -146,9 +156,9 @@ window.addEventListener('resize', () => {
   composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// document.getElementById('enter-btn').addEventListener('click', () => {
-//     startCinematic();
-// });
+document.getElementById('enter-btn').addEventListener('click', () => {
+    startCinematic();
+});
 
 // Animation loop
 function animate() {
