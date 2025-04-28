@@ -226,8 +226,6 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
   // Add collision detection logic directly within the existing functions
   const spheres: THREE.Mesh[] = [];
 
-
-
   const buttons: THREE.Mesh[] = [];
 
   readDataFromFile(`/assets/plotData/triggers.json`)
@@ -260,23 +258,24 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
     function handleCollisionEnter() {
       if (!isColliding) {
-      isColliding = true;
-      if (plotMesh) {
-        plotMesh.material.opacity = 1;
-
-        // Fade in animation
-        // const fadeIn = { opacity: 0 };
-        // new TWEEN.Tween(fadeIn)
-        //   .to({ opacity: 1 }, 1000) // Adjust duration as needed
-        //   .onUpdate(() => {
-        //     plotMesh.material.opacity = fadeIn.opacity;
-        //     plotMesh.material.needsUpdate = true; // Ensure material updates
-        //   })
-        //   .start();
-      }
-
-      // Add an event listener for the Enter key to switch paths
-      const onEnterKeyPress = (event: KeyboardEvent) => {
+        isColliding = true;
+        if (plotMesh) {
+          plotMesh.material.opacity = 1;
+          
+          // Fade in animation
+          // const fadeIn = { opacity: 0 };
+          // new TWEEN.Tween(fadeIn)
+          //   .to({ opacity: 1 }, 1000) // Adjust duration as needed
+          //   .onUpdate(() => {
+            //     plotMesh.material.opacity = fadeIn.opacity;
+            //     plotMesh.material.needsUpdate = true; // Ensure material updates
+            //   })
+            //   .start();
+          }
+          
+          // Add an event listener for the Enter key to switch paths
+        const onEnterKeyPress = (event: KeyboardEvent) => {
+        document.removeEventListener('keydown', onEnterKeyPress);
         if (event.code === 'Enter') {
             readDataFromFile(`/assets/plotData/${plots[index]}.json`)
             .then((data) => {
@@ -289,10 +288,9 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
               console.error('Error loading plot data:', error);
             });
             
-          document.removeEventListener('keydown', onEnterKeyPress); // Remove listener after switching
+           document.removeEventListener('keydown', onEnterKeyPress); // Remove listener after switching
         }
       };
-
       document.addEventListener('keydown', onEnterKeyPress);
       }
     }
@@ -312,8 +310,9 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
           //   .start();
         }
       }
+      
     }
-
+    
     // Add collision detection logic
     function checkSphereCollision() {
       const distance = camera.position.distanceTo(spheres[index].position);
@@ -321,6 +320,8 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
         handleCollisionEnter();
       } else {
         handleCollisionExit();
+        // Cleanup data events when collision exit
+    
       }
     }
 

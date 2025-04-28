@@ -15,3 +15,4 @@ ENDSSH
 echo "$output"
 echo Syncing new files to server
 rsync -avz --progress ./dist/ bbpc:~/apps/crownboulevard/
+# scp -r ./dist/ bbpc:~/apps/crownboulevard/
