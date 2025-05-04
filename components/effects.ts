@@ -19,8 +19,6 @@ export function addEffects(scene: THREE.Scene, camera: THREE.PerspectiveCamera, 
 
     // Check if the object's name includes 'Point'
     if (object.name.includes('Point')) {
-      console.log('Found object with name including "Point":', object.name);
-      
 
       // // Get the position of the object
       // const objectPosition = object.position;

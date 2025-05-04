@@ -5,13 +5,35 @@ import { readDataFromFile, saveDataToFile, saveTDataToFile } from '../helpers/fu
 import * as TWEEN from '@tweenjs/tween.js';
 
 export async function setPathCamera (scene: THREE.Scene, camera: THREE.PerspectiveCamera){;
-
+  let currentPlot = -1; // Initialize currentPlot to -1
   const controls = new PointerLockControls(camera, document.body);
   let isMainPath = true; // Flag to track the current path
 
-  const triggers: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3; t: number }> = [];
-  // Disable mouse controls and mouse click
+  let triggers: Array<{ position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3; t: number }> = [];
+  const plots = ['plot3', 'plot2', 'plot1', 'plot6', 'plot5', 'plot4', 'plot9', 'plot7a', 'plot7', 'plot10', 'plot11', 'plot12', 'plot12a', 'plot14', 'plot16a', 'plot16', 'plot15'];
+  readDataFromFile(`/assets/plotData/triggers.json`)
+    .then((data) => {
+      triggers = data
+  }).catch((error) => {
+    console.error('Error loading triggers data:', error);
+  });
 
+  plots.forEach((plot, index) => {
+    document.getElementById(plot).addEventListener('click', () => {
+      readDataFromFile(`/assets/plotData/${plot}.json`)
+        .then((data) => {
+          const selectedPlot = data; // Select the plot based on the index
+          switchPath(selectedPlot);
+          isMainPath = false;
+          lastPathLocation = triggers[index].t; // Use the t value of the current sphere
+        })
+        .catch((error) => {
+          console.error('Error loading plot data:', error);
+        });
+    })
+  })
+
+  // Disable mouse controls and mouse click
   document.addEventListener('click', () => {
     // controls.lock();
   });
@@ -26,7 +48,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
   scene.add(controls.getObject());
 
-  let velocity = 80; // Initial velocity
+  let velocity = 120; // Initial velocity
 
   document.addEventListener('keydown', (event) => {
     if (event.code === 'Equal') { // '+' key
@@ -66,6 +88,22 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
       case 'KeyJ': {
         // Save camera log to a file
         saveTDataToFile(triggers, 'triggers.json');
+        break;
+      }
+      case 'Enter': {
+        if(currentPlot > -1){
+          readDataFromFile(`/assets/plotData/${plots[currentPlot]}.json`)
+            .then((data) => {
+              const selectedPlot = data; // Select the plot based on the index
+              switchPath(selectedPlot);
+              isMainPath = false;
+              lastPathLocation = triggers[currentPlot].t; // Use the t value of the current sphere
+            })
+            .catch((error) => {
+              console.error('Error loading plot data:', error);
+            });
+        }
+        console.log(currentPlot)
         break;
       }
     }
@@ -126,7 +164,6 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     // const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide, wireframe: false });
     // const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
     // scene.add(tubeMesh);
-    console.log("continueFromLastPosition",continueFromLastPosition)
     // Smoothly transition the camera to the new path
     const targetPosition = continueFromLastPosition
       ? path.getPointAt(lastPathLocation)
@@ -138,8 +175,6 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     
     const transitionDuration = 2000; // Duration of the transition in milliseconds
     const startPosition = camera.position.clone();
-
-    console.log("T",t)
 
     new TWEEN.Tween(startPosition)
       .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, transitionDuration)
@@ -220,7 +255,6 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
       scale: camera.scale.clone(),
       t:t,
     });
-    console.log(triggers)
   }
 
   // Add collision detection logic directly within the existing functions
@@ -228,24 +262,17 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
   const buttons: THREE.Mesh[] = [];
 
-  readDataFromFile(`/assets/plotData/triggers.json`)
-    .then((triggers) => {
-      
-    // Create spheres at the logged positions
-      triggers.forEach((logEntry) => {
-      const sphereGeometry = new THREE.SphereGeometry(10, 60, 60); // Adjust size as needed
-      const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
-      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-      sphere.position.set(logEntry.position.x, logEntry.position.y, logEntry.position.z);
-      spheres.push(sphere);
-      scene.add(sphere);
-    });
 
-
-    triggers.forEach((logEntry, index) => {
-    const plots = ['plot3', 'plot2', 'plot1', 'plot6', 'plot5', 'plot4', 'plot9', 'plot7a', 'plot7', 'plot10', 'plot11', 'plot12', 'plot12a', 'plot14', 'plot16a', 'plot16', 'plot15'];
+  triggers.forEach((logEntry, index) => {
     const plotNames = ['Plot03', 'Plot02', 'Plot01', 'Plot06', 'Plot05', 'Plot04', 'Plot09', 'Plot07A', 'Plot07', 'Plot10', 'Plot11', 'Plot12', 'Plot12A', 'Plot14', 'Plot16A', 'Plot16', 'Plot15'];
-
+    
+    const sphereGeometry = new THREE.SphereGeometry(10, 60, 60); // Adjust size as needed
+    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
+    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    sphere.position.set(logEntry.position.x, logEntry.position.y, logEntry.position.z);
+    spheres.push(sphere);
+    scene.add(sphere);
+    
     const plotName = plotNames[index];
     const plotMesh = scene.getObjectByName(plotName); // Find the mesh by name in the scene
 
@@ -261,37 +288,8 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
         isColliding = true;
         if (plotMesh) {
           plotMesh.material.opacity = 1;
-          
-          // Fade in animation
-          // const fadeIn = { opacity: 0 };
-          // new TWEEN.Tween(fadeIn)
-          //   .to({ opacity: 1 }, 1000) // Adjust duration as needed
-          //   .onUpdate(() => {
-            //     plotMesh.material.opacity = fadeIn.opacity;
-            //     plotMesh.material.needsUpdate = true; // Ensure material updates
-            //   })
-            //   .start();
-          }
-          
-          // Add an event listener for the Enter key to switch paths
-        const onEnterKeyPress = (event: KeyboardEvent) => {
-        document.removeEventListener('keydown', onEnterKeyPress);
-        if (event.code === 'Enter') {
-            readDataFromFile(`/assets/plotData/${plots[index]}.json`)
-            .then((data) => {
-              const selectedPlot = data; // Select the plot based on the index
-              switchPath(selectedPlot);
-              isMainPath = false;
-              lastPathLocation = triggers[index].t; // Use the t value of the current sphere
-            })
-            .catch((error) => {
-              console.error('Error loading plot data:', error);
-            });
-            
-           document.removeEventListener('keydown', onEnterKeyPress); // Remove listener after switching
         }
-      };
-      document.addEventListener('keydown', onEnterKeyPress);
+        currentPlot  = index
       }
     }
 
@@ -300,41 +298,30 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
         isColliding = false;
         if (plotMesh) {
           plotMesh.material.opacity = 0;
-          // Fade out animation
-          // const fadeOut = { opacity: 1 };
-          // new TWEEN.Tween(fadeOut)
-          //   .to({ opacity: 0 }, 1000) // Adjust duration as needed
-          //   .onUpdate(() => {
-          //     plotMesh.material.opacity = fadeOut.opacity;
-          //   })
-          //   .start();
         }
+        currentPlot = -1
       }
-      
     }
     
     // Add collision detection logic
     function checkSphereCollision() {
       const distance = camera.position.distanceTo(spheres[index].position);
-      if (distance < 15) { // Adjust collision threshold as needed
+      if (distance < 45) { // Adjust collision threshold as needed
         handleCollisionEnter();
       } else {
         handleCollisionExit();
         // Cleanup data events when collision exit
-    
       }
     }
 
     // Call collision detection in the animation loop
     function animate() {
       requestAnimationFrame(animate);
-      checkSphereCollision(); // Check collision for this sphere
-      TWEEN.update(performance.now()); // Pass the current time to ensure TWEEN animations are updated
+      checkSphereCollision();
     }
     animate()
   });
-  }
-);
+
  async function checkEndOfPath() {
     if (!isMainPath && t >= 0.97) {
       switchPath(mainPath, true); // Switch back to the main path

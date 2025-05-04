@@ -18,10 +18,11 @@ import { createGrass } from './components/grass';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
+camera.setFocalLength(28);
 camera.position.set( 197.83952660059217,1695.0960537911499, 8119.448619810425); // Set initial camera position
 camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
 const renderer = new THREE.WebGLRenderer({
-  antialias: true, // Disable for postprocessing performance
+  // antialias: true, // Disable for postprocessing performance
   powerPreference: 'high-performance',
   // stencil: false, // Often not needed for postprocessing
   depth: true,
@@ -71,7 +72,6 @@ loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land m
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model
 envModelLoader(scene, envModelpath, () => {}); // Load the land model
 
-console.log(modelpath)
 
 function addcontrolledCamera() {
   function findMeshesByNames(scene: THREE.Scene, names: string[]): THREE.Mesh[] {

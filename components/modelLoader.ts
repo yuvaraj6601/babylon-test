@@ -14,7 +14,6 @@ export function loadLandModel(
 
   // Add a progress bar or loading indicator
   manager.onProgress = (url: string, itemsLoaded: number, itemsTotal: number) => {
-    console.log(`Loading ${url}: ${itemsLoaded} of ${itemsTotal} items loaded`);
     const loadingBar = document.getElementById('progress') as HTMLDivElement | null;
     if (!loadingBar) {
       console.warn('Loading bar element with ID "progress" not found in the DOM.');
@@ -124,7 +123,6 @@ export function loadLandModel(
       // Optional progress callback
       if (xhr.lengthComputable) {
         const percentComplete = (xhr.loaded / xhr.total) * 100;
-        console.log(`Model loading: ${Math.round(percentComplete)}% complete`);
         const loadingBar = document.getElementById('progress') as HTMLDivElement | null;
         if (!loadingBar) {
           console.warn('Loading bar element with ID "progress" not found in the DOM.');

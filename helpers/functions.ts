@@ -47,13 +47,11 @@ export const saveDataToFile = (data: Array<{ position: THREE.Vector3; rotation: 
 
 
 export const readDataFromFile = (path: string): Promise<any> => {
-  console.log(path)
   return fetch(path)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Failed to fetch file at ${path}: ${response.statusText}`);
       }
-      // console.log("second",response)
       return response.json();
     })
     .catch((error) => {
