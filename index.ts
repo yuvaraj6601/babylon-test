@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { setupFPSCamera } from './components/fpscamera'; // Import the FPS camera setup function
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import * as dat from 'dat.gui';
 import { EffectComposer,} from 'postprocessing';
 import { addEffects } from './components/effects';
 import { addLights } from './components/lights';
@@ -11,10 +9,7 @@ import { setupEnvironment } from './components/environment';
 import { setupControlledCamera } from './components/controlledCamera';
 import { envModelLoader } from './components/envModelLoader';
 import { setPathCamera } from './components/pathCamera';
-import { saveDataToFile } from './helpers/functions';
 import { cinematic } from './public/assets/plotData/cinematic'; // Import the cinematic data
-import { createGrass } from './components/grass';
-
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
@@ -22,13 +17,15 @@ camera.setFocalLength(28);
 camera.position.set( 197.83952660059217,1695.0960537911499, 8119.448619810425); // Set initial camera position
 camera.lookAt(-536.7885235499837, -31.3894295837718, 27.600621935653407);
 const renderer = new THREE.WebGLRenderer({
-  // antialias: true, // Disable for postprocessing performance
+  antialias: true, // Disable for postprocessing performance
   powerPreference: 'high-performance',
   // stencil: false, // Often not needed for postprocessing
   depth: true,
   depthWrite: true
 });
-renderer.setPixelRatio(window.devicePixelRatio)
+// renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// renderer.antialias = false;
 
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;

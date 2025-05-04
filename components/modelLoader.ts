@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { LoadingManager } from 'three';
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 
 export function loadLandModel(
   scene: THREE.Scene,
@@ -59,7 +63,7 @@ export function loadLandModel(
   };
 
   const landModelLoader = new GLTFLoader(manager); // Initialize GLTFLoader
-
+  landModelLoader.setDRACOLoader(dracoLoader);
   landModelLoader.load(
     modelPath,
     (gltf) => {
@@ -79,6 +83,8 @@ export function loadLandModel(
         if (child instanceof THREE.Mesh) {
           child.castShadow = true; // Enable shadow casting
           child.receiveShadow = true; // Enable shadow receiving (optional)
+          child.frustumCulled = true;
+          child.geometry.computeBoundingBox();
         }
       });
 
