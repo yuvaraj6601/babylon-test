@@ -63,7 +63,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // const modelpath = './assets/models/KaliMark_PlotCamPathLines.glb'; // Path to the model
-const modelpath = 'assets/models/KaliMark_NewTrees.glb'; // Path to the model
+const modelpath = 'assets/models/KaliMark_25_4Lemontrees.glb'; // Path to the model
 loadLandModel(scene, modelpath, () => addcontrolledCamera()); // Load the land model
 
 const envModelpath = 'assets/models/Environment2.glb'; // Path to the model

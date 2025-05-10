@@ -91,6 +91,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
         break;
       }
       case 'Enter': {
+        console.log(currentPlot)
         if(currentPlot > -1){
           readDataFromFile(`/assets/plotData/${plots[currentPlot]}.json`)
             .then((data) => {
@@ -285,6 +286,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
     function handleCollisionEnter() {
       if (!isColliding) {
+        console.log("collided to ", index)
         isColliding = true;
         if (plotMesh) {
           plotMesh.material.opacity = 1;
@@ -295,6 +297,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
 
     function handleCollisionExit() {
       if (isColliding) {
+        console.log("exit to ", index)
         isColliding = false;
         if (plotMesh) {
           plotMesh.material.opacity = 0;
@@ -306,7 +309,7 @@ export async function setPathCamera (scene: THREE.Scene, camera: THREE.Perspecti
     // Add collision detection logic
     function checkSphereCollision() {
       const distance = camera.position.distanceTo(spheres[index].position);
-      if (distance < 45) { // Adjust collision threshold as needed
+      if (distance < 35) { // Adjust collision threshold as needed
         handleCollisionEnter();
       } else {
         handleCollisionExit();
