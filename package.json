@@ -22,8 +22,7 @@
     "@tweenjs/tween.js": "^25.0.0",
     "dat.gui": "^0.7.9",
     "gsap": "^3.12.7",
-    "postprocessing": "^6.37.2",
-    "three": "^0.175.0"
+    "postprocessing": "^6.37.2"
   },
   "devDependencies": {
     "typescript": "^5.8.3",
